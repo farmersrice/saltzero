@@ -1,0 +1,24 @@
+model_info stores best network.
+
+please note that training plateaued ~64th best net in the first run, 69th net consistently lost by a small amount to the 64th net.
+
+learning rate for 64th net was manually lowered from 0.001 to 0.0003 (using https://stackoverflow.com/questions/47523841/using-keras-to-load-model-and-assign-new-values-to-its-parameters)
+
+all nets from 65 onward were deleted and training restarted.
+
+74 and 78 were compared
+
+
+
+93rd network could barely beat the 74th network. Probably needs a lowering of learning rate again.
+
+93rd model renamed to 0th model in order to save space while putting to gdrive.
+
+Learning rate was manually lowered once again to 0.0001.
+
+20th model, new best, was lowered to 1e-5 learning rate. Then it was renamed to the 0th model yet again.
+
+Then the 21st model after that was renamed to 0th again.
+
+
+Next step: build a deeper model
