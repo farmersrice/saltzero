@@ -18,7 +18,7 @@ typedef pair<int, pair<int, pair<int, int> > > pair4;
 #define remove pop
 #define all(x) x.begin(), x.end()
 
-//g++ -O2 -std=gnu++14 whole_pipeline.cpp UtttBoard.cpp NetworkWrapper.cpp TrainingManager.cpp MCTS.cpp -L"C:\Users\farmersrice\AppData\Local\Programs\Python\Python37\libs" -lpython37 -o whole
+//g++ -O2 -std=gnu++14 whole_pipeline.cpp UtttBoard.cpp NetworkWrapper.cpp TrainingManager.cpp MCTS.cpp -L"C:\Users\farmersrice\AppData\Local\Programs\Python\Python37\libs" -lpython37 -o whole -I"C:\Users\farmersrice\AppData\Local\Programs\Python\Python37\include"
 
 
 int main() {

@@ -1,6 +1,7 @@
 #include "NetworkWrapper.h"
 #include <iostream>
-#include "include/Python.h"
+#include <Python.h>
+//#include "include/Python.h"
 #include <sstream>
 #include <fstream>
 
