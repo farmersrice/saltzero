@@ -22,38 +22,38 @@ typedef pair<int, pair<int, pair<int, int> > > pair4;
 
 
 int main() {
-	if (fopen("FILENAME.in", "r")) {
-		freopen("FILENAME.in", "r", stdin);
-		freopen("FILENAME.out", "w", stdout);
-	}
-	ios_base::sync_with_stdio(false); 
-	cin.tie(NULL);
+    if (fopen("FILENAME.in", "r")) {
+        freopen("FILENAME.in", "r", stdin);
+        freopen("FILENAME.out", "w", stdout);
+    }
+    ios_base::sync_with_stdio(false); 
+    cin.tie(NULL);
 
-	TrainingManager t;
+    TrainingManager t;
 
-	UtttBoard b;
+    UtttBoard b;
 
-	vector<vector<float>> inputQueries;
+    vector<vector<float>> inputQueries;
 
-	for (int i = 0; i < 1000; i++) {
-		inputQueries.pb(b.toNetInputVector());
-	}
+    for (int i = 0; i < 1000; i++) {
+        inputQueries.pb(b.toNetInputVector());
+    }
 
-	clock_t start = clock();
+    clock_t start = clock();
 
-	vector<pair<vector<float>, float>> values = t.net.predict(inputQueries, 0);
-	
-	cout << "time taken " << (clock() - start) / (1.0 * CLOCKS_PER_SEC) << endl;
+    vector<pair<vector<float>, float>> values = t.net.predict(inputQueries, 0);
+    
+    cout << "time taken " << (clock() - start) / (1.0 * CLOCKS_PER_SEC) << endl;
 
 
-	cout << "last result is ";
+    cout << "last result is ";
 
-	for (auto i : values[values.size() - 1].first) {
-		cout << i << ' ';
-	}
-	cout << values[values.size() - 1].second << ' ';
-	cout << endl;
-	
+    for (auto i : values[values.size() - 1].first) {
+        cout << i << ' ';
+    }
+    cout << values[values.size() - 1].second << ' ';
+    cout << endl;
+    
 }
 
 //GCD GCD GCD USE GCD IN MATH

@@ -13,17 +13,17 @@ const int PLAY_BATCH_SIZE = 1000;
 
 
 struct TrainingManager {
-	NetworkWrapper net;
-	int storedBest;
+    NetworkWrapper net;
+    int storedBest;
 
-	TrainingManager();
+    TrainingManager();
 
-	// first is training data, second is result
-	// Assume that if we are not training, then we are dueling, and use the two comparison nets as a result
-	// Use latest vs best net
-	std::pair<std::vector<std::tuple<std::vector<float>, std::vector<float>, int>>, std::pair<double, double>> playGames(int numGames = PLAY_BATCH_SIZE, bool isTraining = true, int flip = 0);
+    // first is training data, second is result
+    // Assume that if we are not training, then we are dueling, and use the two comparison nets as a result
+    // Use latest vs best net
+    std::pair<std::vector<std::tuple<std::vector<float>, std::vector<float>, int>>, std::pair<double, double>> playGames(int numGames = PLAY_BATCH_SIZE, bool isTraining = true, int flip = 0);
 
-	void saveData(std::vector<std::tuple<std::vector<float>, std::vector<float>, int>> data, int numGames);
-	std::pair<double, double> compareTwoNetworks(int other);
-	void compareBestToLatest();
+    void saveData(std::vector<std::tuple<std::vector<float>, std::vector<float>, int>> data, int numGames);
+    std::pair<double, double> compareTwoNetworks(int other);
+    void compareBestToLatest();
 };

@@ -66,7 +66,7 @@ class NeuralNetTensorflow:
         print(self.model.summary())
 
     def predict(self, board):
-        # 	print(np.asarray(board.to_nn_input_vector()).reshape(-1, 189))
+        #     print(np.asarray(board.to_nn_input_vector()).reshape(-1, 189))
         # start = time.time()
 
         prediction = self.model.predict_on_batch(np.asarray(board.to_nn_input_vector()).reshape(-1, 189))
@@ -99,4 +99,4 @@ class NeuralNetTensorflow:
     # Probably has something to do with precision errors or something like that.
 
     # def get_network_hash(self):
-    # 	return hash(str(self.model.weights))
+    #     return hash(str(self.model.weights))

@@ -21,18 +21,18 @@ typedef pair<int, pair<int, pair<int, int> > > pair4;
 
 
 int main() {
-	if (fopen("FILENAME.in", "r")) {
-		freopen("FILENAME.in", "r", stdin);
-		freopen("FILENAME.out", "w", stdout);
-	}
-	ios_base::sync_with_stdio(false); 
-	cin.tie(NULL);
+    if (fopen("FILENAME.in", "r")) {
+        freopen("FILENAME.in", "r", stdin);
+        freopen("FILENAME.out", "w", stdout);
+    }
+    ios_base::sync_with_stdio(false); 
+    cin.tie(NULL);
 
-	TrainingManager t;
+    TrainingManager t;
 
-	auto result = t.compareTwoNetworks(0);
+    auto result = t.compareTwoNetworks(0);
 
-	cout << " best " << result.first << " old " << result.second << endl;
+    cout << " best " << result.first << " old " << result.second << endl;
 }
 
 //GCD GCD GCD USE GCD IN MATH

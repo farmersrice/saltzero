@@ -49,9 +49,9 @@ def predict(vector_string, index):
     # several alternative, slower ways below
 
     # for i in range(num_queries):
-    # 	for j in range(189):
-    # 		if vector_string[i * 189 + j] == '1':
-    # 			queries[i][j] = 1
+    #     for j in range(189):
+    #         if vector_string[i * 189 + j] == '1':
+    #             queries[i][j] = 1
 
     # queries = np.array([+(c=='1') for c in vector_string])
     # queries = [queries[189 * i : 189 * (i + 1)] for i in range(num_queries)]

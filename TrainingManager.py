@@ -369,7 +369,7 @@ class TrainingManager:
             num_games += this_games
 
             # if num_games > max_games:
-            # 	return num_games - this_games, training_data
+            #     return num_games - this_games, training_data
 
             if parse_cpp:
                 temp = self.parse_cpp_file(file)

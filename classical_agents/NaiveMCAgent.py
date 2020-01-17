@@ -62,15 +62,15 @@ class NaiveMCAgent(Agent):
 
         return best_pos
         """
-		iterations = 1000
+        iterations = 1000
 
-		for asdf in range(iterations):
+        for asdf in range(iterations):
 
-			for i in range(len(valid)):
-				temp_board = board.deepcopy()
-				temp_board.process_move(valid[i])
+            for i in range(len(valid)):
+                temp_board = board.deepcopy()
+                temp_board.process_move(valid[i])
 
-				scores[i] = self.get_score(temp_board)
+                scores[i] = self.get_score(temp_board)
 
-			#Pick the best one 
-		"""
+            #Pick the best one 
+        """

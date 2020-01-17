@@ -11,36 +11,36 @@ class BoardHelper:
 
         # this is much faster than having 2d arrays and going back and forth and little objects and such
         """
-		[ 0.,  1.,  2.,  9., 10., 11., 18., 19., 20.],
-		[ 3.,  4.,  5., 12., 13., 14., 21., 22., 23.],
-		[ 6.,  7.,  8., 15., 16., 17., 24., 25., 26.],
-		[27., 28., 29., 36., 37., 38., 45., 46., 47.],
-		[30., 31., 32., 39., 40., 41., 48., 49., 50.],
-		[33., 34., 35., 42., 43., 44., 51., 52., 53.],
-		[54., 55., 56., 63., 64., 65., 72., 73., 74.],
-		[57., 58., 59., 66., 67., 68., 75., 76., 77.],
-		[60., 61., 62., 69., 70., 71., 78., 79., 80.]
+        [ 0.,  1.,  2.,  9., 10., 11., 18., 19., 20.],
+        [ 3.,  4.,  5., 12., 13., 14., 21., 22., 23.],
+        [ 6.,  7.,  8., 15., 16., 17., 24., 25., 26.],
+        [27., 28., 29., 36., 37., 38., 45., 46., 47.],
+        [30., 31., 32., 39., 40., 41., 48., 49., 50.],
+        [33., 34., 35., 42., 43., 44., 51., 52., 53.],
+        [54., 55., 56., 63., 64., 65., 72., 73., 74.],
+        [57., 58., 59., 66., 67., 68., 75., 76., 77.],
+        [60., 61., 62., 69., 70., 71., 78., 79., 80.]
 
 
-		to
+        to
 
-		[20., 23., 26., 47., 50., 53., 74., 77., 80.],
-		[19., 22., 25., 46., 49., 52., 73., 76., 79.],
-		[18., 21., 24., 45., 48., 51., 72., 75., 78.],
-		[11., 14., 17., 38., 41., 44., 65., 68., 71.],
-		[10., 13., 16., 37., 40., 43., 64., 67., 70.],
-		[ 9., 12., 15., 36., 39., 42., 63., 66., 69.],
-		[ 2.,  5.,  8., 29., 32., 35., 56., 59., 62.],
-		[ 1.,  4.,  7., 28., 31., 34., 55., 58., 61.],
-		[ 0.,  3.,  6., 27., 30., 33., 54., 57., 60.]
+        [20., 23., 26., 47., 50., 53., 74., 77., 80.],
+        [19., 22., 25., 46., 49., 52., 73., 76., 79.],
+        [18., 21., 24., 45., 48., 51., 72., 75., 78.],
+        [11., 14., 17., 38., 41., 44., 65., 68., 71.],
+        [10., 13., 16., 37., 40., 43., 64., 67., 70.],
+        [ 9., 12., 15., 36., 39., 42., 63., 66., 69.],
+        [ 2.,  5.,  8., 29., 32., 35., 56., 59., 62.],
+        [ 1.,  4.,  7., 28., 31., 34., 55., 58., 61.],
+        [ 0.,  3.,  6., 27., 30., 33., 54., 57., 60.]
 
-		then
+        then
 
-		for i in range(9):
-			for j in range(9):
-				print('temp[' + str(int(old_array[i][j])) + '] = self.board[' + str(int(new_array[i][j])) + ']')
-		
-		"""
+        for i in range(9):
+            for j in range(9):
+                print('temp[' + str(int(old_array[i][j])) + '] = self.board[' + str(int(new_array[i][j])) + ']')
+        
+        """
 
         if use_floats:
             temp = np.zeros(81)
@@ -136,16 +136,16 @@ class BoardHelper:
         # see above for explanation on how
         # flipud in numpy
         """
-		[60., 61., 62., 69., 70., 71., 78., 79., 80.],
-		[57., 58., 59., 66., 67., 68., 75., 76., 77.],
-		[54., 55., 56., 63., 64., 65., 72., 73., 74.],
-		[33., 34., 35., 42., 43., 44., 51., 52., 53.],
-		[30., 31., 32., 39., 40., 41., 48., 49., 50.],
-		[27., 28., 29., 36., 37., 38., 45., 46., 47.],
-		[ 6.,  7.,  8., 15., 16., 17., 24., 25., 26.],
-		[ 3.,  4.,  5., 12., 13., 14., 21., 22., 23.],
-		[ 0.,  1.,  2.,  9., 10., 11., 18., 19., 20.]]
-		"""
+        [60., 61., 62., 69., 70., 71., 78., 79., 80.],
+        [57., 58., 59., 66., 67., 68., 75., 76., 77.],
+        [54., 55., 56., 63., 64., 65., 72., 73., 74.],
+        [33., 34., 35., 42., 43., 44., 51., 52., 53.],
+        [30., 31., 32., 39., 40., 41., 48., 49., 50.],
+        [27., 28., 29., 36., 37., 38., 45., 46., 47.],
+        [ 6.,  7.,  8., 15., 16., 17., 24., 25., 26.],
+        [ 3.,  4.,  5., 12., 13., 14., 21., 22., 23.],
+        [ 0.,  1.,  2.,  9., 10., 11., 18., 19., 20.]]
+        """
 
         if use_floats:
             temp = np.zeros(81)
@@ -239,10 +239,10 @@ class BoardHelper:
 
 class TicTacToe:
     """
-	small board helper, the big board is a 3x3 of small boards.
-	zero represents unoccupied, one represents first player, two represents second player
+    small board helper, the big board is a 3x3 of small boards.
+    zero represents unoccupied, one represents first player, two represents second player
 
-	"""
+    """
 
     @staticmethod
     def get_game_ended(board):
@@ -258,7 +258,6 @@ class TicTacToe:
     @staticmethod
     def get_win_result(board):
         # return 0 for no wins, 1 for first win, 2 for second win
-
         for i in range(3):
             # likely faster than a for loop
             if board[i * 3] == board[i * 3 + 1] and board[i * 3 + 1] == board[i * 3 + 2] and board[i * 3] != 0:
@@ -268,7 +267,6 @@ class TicTacToe:
                 return board[i]
 
         # check diagonals
-
         if board[0] == board[4] and board[4] == board[8] and board[0] != 0:
             return board[0]
 
@@ -280,7 +278,6 @@ class TicTacToe:
     @staticmethod
     def get_valid_moves(board):
         answer = np.zeros(9, dtype=int)
-
         if TicTacToe.get_game_ended(board):
             return answer
 
@@ -308,16 +305,13 @@ class TicTacToe:
 class UtttBoard:
     def deepcopy(self):
         answer = UtttBoard()
-
         answer.next_square = self.next_square
-
         # answer.history = [0 for x in range(len(self.history))]
 
         # for i in range(len(self.history)):
-        # 	answer.history[i] = self.history[i]
+        #     answer.history[i] = self.history[i]
 
         answer.cur_player = self.cur_player
-
         for i in range(81):
             answer.board[i] = self.board[i]
 
@@ -325,10 +319,8 @@ class UtttBoard:
 
     def __init__(self):
         self.next_square = -1  # -1 for play anywhere, else 0-8 for target square
-
         # self.history = []
         self.cur_player = 1
-
         self.board = np.zeros(81, dtype=int)
 
     def get_flattened_board(self):
@@ -339,13 +331,11 @@ class UtttBoard:
 
     def get_valid_moves_vector(self):
         valid_moves = self.get_valid_moves()
-
         valid_count = 0
         for i in range(81):
             valid_count += valid_moves[i]
 
         answer = []
-
         for i in range(81):
             if valid_moves[i] == 1:
                 answer += [i]
@@ -354,22 +344,19 @@ class UtttBoard:
 
     def get_valid_moves(self):  # binary vector
         answer = np.zeros(81, dtype=int)
-
         counter = 0
-
         for i in range(9):
             if i == self.next_square or self.next_square == -1:
                 TicTacToe.mark_valid_moves(self.board, answer, i * 9)
                 # small_valid_moves = TicTacToe.get_valid_moves(self.board[i * 9 : i * 9 + 9])
 
                 # for k in range(0, 9):
-                # 	answer[i * 9 + k] = small_valid_moves[k]
+                #     answer[i * 9 + k] = small_valid_moves[k]
 
         return answer
 
     def get_game_ended(self):
         win_results = self.get_small_win_results()
-
         if TicTacToe.get_win_result(win_results) != 0:
             return True
 
@@ -391,9 +378,7 @@ class UtttBoard:
             return
 
         self.board[position] = self.cur_player
-
         self.next_square = position % 9
-
         if TicTacToe.get_game_ended(self.board[self.next_square * 9 : self.next_square * 9 + 9]):
             self.next_square = -1
 
@@ -404,21 +389,20 @@ class UtttBoard:
             self.cur_player = 1
 
     """
-	def undo(self):
-		# will error out if we haven't made any moves in history yet
-		if self.cur_player == 1:
-			self.cur_player = 2
-		else:
-			self.cur_player = 1
+    def undo(self):
+        # will error out if we haven't made any moves in history yet
+        if self.cur_player == 1:
+            self.cur_player = 2
+        else:
+            self.cur_player = 1
 
-		last_played = self.history.pop()
+        last_played = self.history.pop()
 
-		self.board[last_played] = 0
-	"""
+        self.board[last_played] = 0
+    """
 
     def get_small_win_results(self):
         win_results = np.zeros(9, dtype=int)
-
         for i in range(9):
             win_results[i] = TicTacToe.get_win_result(self.board[i * 9 : i * 9 + 9])
 
@@ -426,14 +410,11 @@ class UtttBoard:
 
     def get_win_result(self):
         # return 0 for no wins, 1 for first win, 2 for second win
-
         win_results = self.get_small_win_results()
-
         return TicTacToe.get_win_result(win_results)
 
     def rotate90(self):
         self.board = BoardHelper.rotate90(self.board)
-
         if self.next_square == 0:
             self.next_square = 6
         elif self.next_square == 1:
@@ -453,7 +434,6 @@ class UtttBoard:
 
     def reflect_across_horizontal_axis(self):
         self.board = BoardHelper.reflect_across_horizontal_axis(self.board)
-
         if self.next_square == 6:
             self.next_square = 0
         elif self.next_square == 7:
@@ -470,13 +450,10 @@ class UtttBoard:
     def get_symmetries(self, probability_vector):
         # return vector containing all symmetries
         # should be only the 8 existing ones
-
         answer = []
-
         for i in range(4):
             self.rotate90()
             probability_vector = BoardHelper.rotate90(probability_vector, use_floats=True)
-
             answer += [(self.to_nn_input_vector(), probability_vector)]
 
         self.reflect_across_horizontal_axis()
@@ -485,29 +462,23 @@ class UtttBoard:
         for i in range(4):
             self.rotate90()
             probability_vector = BoardHelper.rotate90(probability_vector, use_floats=True)
-
             answer += [(self.to_nn_input_vector(), probability_vector)]
 
         self.reflect_across_horizontal_axis()
         probability_vector = BoardHelper.reflect_across_horizontal_axis(probability_vector, use_floats=True)
-
         return answer
 
     def to_nn_input_vector(self):
         # see neural net for input description
-
         answer = np.zeros(189, dtype=int)
-
         for i in range(81):
             answer[i] = 1 if self.board[i] == self.cur_player else 0
 
         opponent = 1 if self.cur_player == 2 else 2
-
         for i in range(81):
             answer[i + 81] = 1 if self.board[i] == opponent else 0
 
         win_results = self.get_small_win_results()
-
         for i in range(9):
             answer[i + 162] = 1 if win_results[i] == self.cur_player else 0
 
@@ -527,7 +498,6 @@ class UtttBoard:
 
     def __hash__(self):
         answer = np.int64(0)
-
         for i in range(81):
             answer = answer * 31 + self.board[i] + 1
             answer %= 1000000007
@@ -535,44 +505,41 @@ class UtttBoard:
         return int(answer)
 
     """
-	def to_history_string(self):
-		answer = ""
-		for i in range(len(self.history)):
-			answer += self.history[i]
-			answer += " "
+    def to_history_string(self):
+        answer = ""
+        for i in range(len(self.history)):
+            answer += self.history[i]
+            answer += " "
 
-		return answer
-	"""
+        return answer
+    """
 
     def to_string(self):
         """
-		0 1 2   9 10 11   18 19 20
-		3 4 5   12 13 14  21 22 23
-		6 7 8   15 16 17  24 25 26
+        0 1 2   9 10 11   18 19 20
+        3 4 5   12 13 14  21 22 23
+        6 7 8   15 16 17  24 25 26
 
-		and so on is the internal representation. We want to convert it to normal matrix representation.
+        and so on is the internal representation. We want to convert it to normal matrix representation.
 
-		"""
+        """
 
         array_human = [[0 for x in range(9)] for y in range(9)]
         """
-		array_human is in format:
+        array_human is in format:
 
-		0 1 2 3 4 5 6 7 8
-		9 10 .....
-		"""
+        0 1 2 3 4 5 6 7 8
+        9 10 .....
+        """
 
         for i in range(81):
             big = i // 9
             small = i % 9
-
             human_row = 3 * (big // 3) + (small // 3)
             human_col = 3 * (big % 3) + (small % 3)
-
             array_human[human_row][human_col] = self.board[i]
 
         answer = ""
-
         for i in range(9):
             for j in range(9):
                 if array_human[i][j] == 0:
@@ -586,7 +553,6 @@ class UtttBoard:
                     answer += " "
 
             answer += "\n"
-
             if i == 2 or i == 5:
                 answer += "\n"
 

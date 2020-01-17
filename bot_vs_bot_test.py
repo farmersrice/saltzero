@@ -17,34 +17,34 @@ score1 = 1
 
 for i in range(game_count):
 
-	board = UtttBoard()
+    board = UtttBoard()
 
-	to_move = i % 2
+    to_move = i % 2
 
-	while not board.get_game_ended():
+    while not board.get_game_ended():
 
-		if to_move == 0:
-			board.process_move(bot0.get_best_move(board))
-		else:
-			board.process_move(bot1.get_best_move(board))
+        if to_move == 0:
+            board.process_move(bot0.get_best_move(board))
+        else:
+            board.process_move(bot1.get_best_move(board))
 
-		print("moved " + str(to_move))
-		to_move = 1 - to_move
+        print("moved " + str(to_move))
+        to_move = 1 - to_move
 
-	winner = board.get_win_result()
+    winner = board.get_win_result()
 
-	if winner == 0:
-		score0 += 0.5
-		score1 += 0.5
-		print("draw")
-	else:
+    if winner == 0:
+        score0 += 0.5
+        score1 += 0.5
+        print("draw")
+    else:
 
-		if winner - 1 == i % 2:
-			score0 += 1
-			print("p0 won")
-		else:
-			score1 += 1
-			print("p1 won")
+        if winner - 1 == i % 2:
+            score0 += 1
+            print("p0 won")
+        else:
+            score1 += 1
+            print("p1 won")
 
 print("scores are " + str(score0) + " to " + str(score1))
 """
