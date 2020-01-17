@@ -515,13 +515,9 @@ class UtttBoard:
             answer[i + 171] = 1 if win_results[i] == opponent else 0
 
         for i in range(9):
-            answer[i + 180] = (
-                1
-                if (
-                    (self.next_square == i or self.next_square == -1)
-                    and not TicTacToe.get_game_ended(self.board[i * 9 : i * 9 + 9])
-                )
-                else 0
+            answer[i + 180] = int(
+                (self.next_square == i or self.next_square == -1)
+                and not TicTacToe.get_game_ended(self.board[i * 9 : i * 9 + 9])
             )
 
         return answer
