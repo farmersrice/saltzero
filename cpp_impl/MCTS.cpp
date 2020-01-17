@@ -1,14 +1,15 @@
 #include "MCTS.h"
-#include <cmath>
-#include <random>
 #include <chrono>
+#include <cmath>
 #include <iostream>
+#include <random>
 using namespace __gnu_pbds;
 using namespace std;
 
 typedef long long ll;
 
-const ll RANDOM = chrono::high_resolution_clock::now().time_since_epoch().count();
+const ll RANDOM =
+    chrono::high_resolution_clock::now().time_since_epoch().count();
 
 mt19937 rng(RANDOM);
 
@@ -22,7 +23,8 @@ vector<double> dirichlet(int length) {
         totalSum += answer[i];
     }
 
-    if (totalSum < 0) return answer;
+    if (totalSum < 0)
+        return answer;
 
     for (int i = 0; i < length; i++) {
         answer[i] /= totalSum;
@@ -31,13 +33,14 @@ vector<double> dirichlet(int length) {
     return answer;
 }
 
-//This is the equivalent of the BatchedMCTS
+// This is the equivalent of the BatchedMCTS
 
 UtttBoard MCTS::visitDown(UtttBoard board, bool useDirichletNoise) {
     ll boardHash = board.hash();
 
     if (gameEndedCache.find(boardHash) == gameEndedCache.end()) {
-        gameEndedCache[boardHash] = make_pair(board.getGameEnded(), board.getWinResult());
+        gameEndedCache[boardHash] =
+            make_pair(board.getGameEnded(), board.getWinResult());
     }
 
     if (gameEndedCache[boardHash].first) {
@@ -64,7 +67,8 @@ UtttBoard MCTS::visitDown(UtttBoard board, bool useDirichletNoise) {
         vector<double> upperConfidenceBounds(81, -100000.0);
 
         for (int i = 0; i < 81; i++) {
-            if (validMoves[i] != 1) continue;
+            if (validMoves[i] != 1)
+                continue;
 
             ll edgeHash = board.hashWithMove(i);
 
@@ -79,8 +83,11 @@ UtttBoard MCTS::visitDown(UtttBoard board, bool useDirichletNoise) {
                 thisP = thisP * (1 - EPS) + noise[counter++] * EPS;
             }
 
-            upperConfidenceBounds[i] = Q[edgeHash] + C_PUCT * thisP * sqrt(nodeVisitCount[boardHash]) / (1 + N[edgeHash]);
-            //cout << "ucb " << i << " is " << upperConfidenceBounds[i] << " (q is " << Q[edgeHash] << ")" << endl;
+            upperConfidenceBounds[i] =
+                Q[edgeHash] + C_PUCT * thisP * sqrt(nodeVisitCount[boardHash]) /
+                                  (1 + N[edgeHash]);
+            // cout << "ucb " << i << " is " << upperConfidenceBounds[i] << " (q
+            // is " << Q[edgeHash] << ")" << endl;
         }
 
         int bestMove = -1;
@@ -98,23 +105,27 @@ UtttBoard MCTS::visitDown(UtttBoard board, bool useDirichletNoise) {
 
         return visitDown(board, false);
     }
-    
+
     return board;
 }
 
-double MCTS::visitUp(UtttBoard board, vector<float> netpi, float netv, int nextMove) {
+double MCTS::visitUp(UtttBoard board, vector<float> netpi, float netv,
+                     int nextMove) {
     ll boardHash = board.hash();
 
     if (gameEndedCache.find(boardHash) == gameEndedCache.end()) {
-        gameEndedCache[boardHash] = make_pair(board.getGameEnded(), board.getWinResult());
+        gameEndedCache[boardHash] =
+            make_pair(board.getGameEnded(), board.getWinResult());
     }
 
     pair<bool, int> gameEndedState = gameEndedCache[boardHash];
     if (gameEndedState.first) {
         int result = gameEndedState.second;
 
-        if (result == 0) return 0;
-        if (result == board.curPlayer) return -1;
+        if (result == 0)
+            return 0;
+        if (result == board.curPlayer)
+            return -1;
         return 1;
     }
 
@@ -129,8 +140,6 @@ double MCTS::visitUp(UtttBoard board, vector<float> netpi, float netv, int nextM
             }
             total += netpi[i];
         }
-
-
 
         if (total <= 0.0f) {
             cout << "No valid moves predicted" << endl;
@@ -155,7 +164,7 @@ double MCTS::visitUp(UtttBoard board, vector<float> netpi, float netv, int nextM
     double v = visitUp(board, netpi, netv, nextMove + 1);
     Q[edgeHash] = (N[edgeHash] * Q[edgeHash] + v) / (N[edgeHash] + 1.0);
     N[edgeHash]++;
-    //cout << "increased edgeHash count " << edgeHash << endl;
+    // cout << "increased edgeHash count " << edgeHash << endl;
     nodeVisitCount[boardHash]++;
 
     return -v;
@@ -186,10 +195,10 @@ vector<float> MCTS::getProbabilities(UtttBoard board) {
     float total = 0.0f;
     for (int i = 0; i < 81; i++) {
         ll edgeHash = board.hashWithMove(i);
-        //cout << "checking edgeHash " << edgeHash << endl;
+        // cout << "checking edgeHash " << edgeHash << endl;
 
         localN[i] = (N.find(edgeHash) != N.end() ? N[edgeHash] : 0.0f);
-        //cout << i << " localN is " << localN[i] << endl;
+        // cout << i << " localN is " << localN[i] << endl;
         total += localN[i];
     }
 
@@ -200,11 +209,13 @@ vector<float> MCTS::getProbabilities(UtttBoard board) {
     return localN;
 }
 
-pair<vector<float>, int> MCTS::getProbabilitiesAndBestMove(UtttBoard board, int temperature) {
+pair<vector<float>, int> MCTS::getProbabilitiesAndBestMove(UtttBoard board,
+                                                           int temperature) {
     vector<float> probabilities = getProbabilities(board);
 
     if (temperature == 1) {
-        discrete_distribution<int> dis(probabilities.begin(), probabilities.end());
+        discrete_distribution<int> dis(probabilities.begin(),
+                                       probabilities.end());
 
         int bestMove = dis(rng);
 
@@ -224,8 +235,11 @@ pair<vector<float>, int> MCTS::getProbabilitiesAndBestMove(UtttBoard board, int 
     }
 }
 
-void MCTS::pruneRecursive(UtttBoard board, int saveEdge) { //saveEdge tells us which edge NOT to traverse (since we'll be resuming from there)
-    //Erase edges and recurse
+void MCTS::pruneRecursive(
+    UtttBoard board,
+    int saveEdge) { // saveEdge tells us which edge NOT to traverse (since we'll
+                    // be resuming from there)
+    // Erase edges and recurse
     for (int i = 0; i < 81; i++) {
         ll edgeHash = board.hashWithMove(i);
 
@@ -233,19 +247,20 @@ void MCTS::pruneRecursive(UtttBoard board, int saveEdge) { //saveEdge tells us w
             Q.erase(edgeHash);
             N.erase(edgeHash);
 
-            //cout << "Pruned edge " << edgeHash << endl;
+            // cout << "Pruned edge " << edgeHash << endl;
             UtttBoard nextBoard = board;
             nextBoard.processMove(i);
-            if (i != saveEdge) pruneRecursive(nextBoard, -1);
+            if (i != saveEdge)
+                pruneRecursive(nextBoard, -1);
         }
     }
 
-    //Erase current node
+    // Erase current node
     ll boardHash = board.hash();
 
     if (P.find(boardHash) != P.end()) {
         P.erase(boardHash);
-        //cout << "Pruned board " << boardHash << endl;
+        // cout << "Pruned board " << boardHash << endl;
         gameEndedCache.erase(boardHash);
         nodeVisitCount.erase(boardHash);
     }

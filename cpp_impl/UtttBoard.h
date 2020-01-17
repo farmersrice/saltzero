@@ -1,7 +1,7 @@
 #pragma once
 
-#include <vector>
 #include <string>
+#include <vector>
 
 struct UtttBoard {
     bool miniGetGameEnded(int miniBoard);
@@ -22,12 +22,10 @@ struct UtttBoard {
     int getWinResult();
     void rotate90();
     void reflect();
-    std::vector<std::pair<std::vector<float>, std::vector<float>>> getSymmetries(std::vector<float> probabilityVector);
+    std::vector<std::pair<std::vector<float>, std::vector<float>>>
+    getSymmetries(std::vector<float> probabilityVector);
     std::vector<float> toNetInputVector();
     std::string toString();
     long long hash();
     long long hashWithMove(int move);
-
-
-
 };

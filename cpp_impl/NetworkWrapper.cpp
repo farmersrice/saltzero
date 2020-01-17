@@ -1,15 +1,15 @@
 #include "NetworkWrapper.h"
-#include <iostream>
 #include <Python.h>
+#include <iostream>
 //#include "include/Python.h"
-#include <sstream>
 #include <fstream>
+#include <sstream>
 
 using namespace std;
 
 const int IINF = 1000000000;
 
-bool fileExists(const char* name) {
+bool fileExists(const char *name) {
     FILE *pFile = fopen(name, "r");
 
     if (pFile != NULL) {
@@ -33,12 +33,12 @@ string vectorToString(vector<float> values, bool spaces) {
 
 NetworkWrapper::NetworkWrapper() {
     Py_Initialize();
-    pName = PyUnicode_FromString((char*)"network_wrapper");
+    pName = PyUnicode_FromString((char *)"network_wrapper");
     pModule = PyImport_Import(pName);
     pDict = PyModule_GetDict(pModule);
 
-    pFuncLoadModel = PyDict_GetItemString(pDict, (char*)"load_model");
-    pFuncPredict = PyDict_GetItemString(pDict, (char*)"predict");
+    pFuncLoadModel = PyDict_GetItemString(pDict, (char *)"load_model");
+    pFuncPredict = PyDict_GetItemString(pDict, (char *)"predict");
 }
 
 void NetworkWrapper::loadNetwork(int modelNum, int index) {
@@ -46,7 +46,7 @@ void NetworkWrapper::loadNetwork(int modelNum, int index) {
     PyTuple_SET_ITEM(pArgs, 0, PyLong_FromLong(modelNum));
     PyTuple_SET_ITEM(pArgs, 1, PyLong_FromLong(index));
 
-    Py_XDECREF(PyObject_CallObject(pFuncLoadModel, pArgs)); 
+    Py_XDECREF(PyObject_CallObject(pFuncLoadModel, pArgs));
     Py_DECREF(pArgs);
 }
 
@@ -60,7 +60,7 @@ int NetworkWrapper::getBestNetwork() {
 }
 
 int NetworkWrapper::getLatestNetwork() {
-    //check file existence and such for this part
+    // check file existence and such for this part
 
     int networkId = 0;
     for (int i = 0; i < IINF; i++) {
@@ -95,16 +95,19 @@ inline vector<float> parseFloats(string s, int length) {
     int counter = 0;
     int index = 0;
     while (index < s.size()) {
-        while (index < s.size() && (s[index] == '\'' || s[index] == ' ')) index++;
+        while (index < s.size() && (s[index] == '\'' || s[index] == ' '))
+            index++;
 
-        if (index >= s.size()) break;
+        if (index >= s.size())
+            break;
 
-        //Starting a new value
+        // Starting a new value
 
         int start = index;
         int end = index;
 
-        while (end < s.size() && (s[end] != '\'' && s[end] != ' ')) end++;
+        while (end < s.size() && (s[end] != '\'' && s[end] != ' '))
+            end++;
 
         bool negative = false;
         if (s[start] == '-') {
@@ -126,21 +129,22 @@ inline vector<float> parseFloats(string s, int length) {
 
         double thisAns = 0.0;
         for (int j = start; j < end; j++) {
-            if (s[j] == '.') continue;
+            if (s[j] == '.')
+                continue;
             thisAns += curPower * (s[j] - '0');
             curPower /= 10.0;
         }
 
         answer[counter++] = (negative ? -thisAns : thisAns);
         index = end;
-
     }
 
     return answer;
 }
 
-vector<pair<vector<float>, float>> NetworkWrapper::predict(vector<vector<float>> inputs, int index) {
-    //auto start = clock();
+vector<pair<vector<float>, float>>
+NetworkWrapper::predict(vector<vector<float>> inputs, int index) {
+    // auto start = clock();
 
     vector<float> queries(inputs.size() * 189);
     int counter = 0;
@@ -151,23 +155,23 @@ vector<pair<vector<float>, float>> NetworkWrapper::predict(vector<vector<float>>
     }
 
     PyObject *queryStringArgs = PyTuple_New(2);
-    PyTuple_SET_ITEM(queryStringArgs, 0, PyUnicode_FromString(vectorToString(queries).c_str()));
+    PyTuple_SET_ITEM(queryStringArgs, 0,
+                     PyUnicode_FromString(vectorToString(queries).c_str()));
     PyTuple_SET_ITEM(queryStringArgs, 1, PyLong_FromLong(index));
 
-    //auto mid = clock();
+    // auto mid = clock();
 
     PyObject *queryResult = PyObject_CallObject(pFuncPredict, queryStringArgs);
 
     PyObject *objectsRepresentation = PyObject_Repr(queryResult);
-    const char* s = PyUnicode_AsUTF8(objectsRepresentation);
+    const char *s = PyUnicode_AsUTF8(objectsRepresentation);
     string answerString(s);
 
-    //auto mid2 = clock();
+    // auto mid2 = clock();
 
     Py_DECREF(queryStringArgs);
     Py_DECREF(queryResult);
     Py_DECREF(objectsRepresentation);
-
 
     vector<pair<vector<float>, float>> answer(inputs.size());
 
@@ -186,11 +190,12 @@ vector<pair<vector<float>, float>> NetworkWrapper::predict(vector<vector<float>>
         answer[i].second = p2;
     }
 
-    //auto end = clock();
+    // auto end = clock();
 
-    //cout << "before python time " << (mid - start) / (1.0 * CLOCKS_PER_SEC ) << endl;
-    //cout << "after python time " << (end - mid2) / (1.0 * CLOCKS_PER_SEC ) << endl;
-    //cout << "total time " << (end - start) / (1.0 * CLOCKS_PER_SEC ) << endl;
+    // cout << "before python time " << (mid - start) / (1.0 * CLOCKS_PER_SEC )
+    // << endl; cout << "after python time " << (end - mid2) / (1.0 *
+    // CLOCKS_PER_SEC ) << endl; cout << "total time " << (end - start) / (1.0 *
+    // CLOCKS_PER_SEC ) << endl;
 
     return answer;
 }
