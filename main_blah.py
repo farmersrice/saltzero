@@ -1,18 +1,15 @@
-from TrainingManager import TrainingManager
-from NeuralNet import NeuralNet
-
+import gc
 import os
-os.environ['CUDA_VISIBLE_DEVICES'] = '-1' # no gpu
 
-
+import tensorflow as tf
 from classical_agents.NaiveMCAgent import NaiveMCAgent
 from classical_agents.RandomAgent import RandomAgent
 from DuelManager import DuelManager
+from NeuralNet import NeuralNet
 from SaltZeroAgent import SaltZeroAgent
+from TrainingManager import TrainingManager
 
-import gc
-
-import tensorflow as tf
+os.environ["CUDA_VISIBLE_DEVICES"] = "-1"  # no gpu
 
 tf.compat.v1.disable_eager_execution()
 

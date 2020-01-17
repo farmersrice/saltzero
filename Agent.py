@@ -1,10 +1,8 @@
+class Agent:
+    def get_best_move(self, board):
+        # return integer
 
-class Agent():
-	
-	def get_best_move(self, board):
-		# return integer
+        pass
 
-		pass
-
-	def reset(self):
-		pass
+    def reset(self):
+        pass

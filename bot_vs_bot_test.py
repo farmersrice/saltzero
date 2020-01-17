@@ -1,14 +1,12 @@
-
-from UtttBoard import UtttBoard
-from classical_agents.RandomAgent import RandomAgent
 from classical_agents.NaiveMCAgent import NaiveMCAgent
+from classical_agents.RandomAgent import RandomAgent
 from DuelManager import DuelManager
+from UtttBoard import UtttBoard
 
-result = DuelManager().play_games(RandomAgent(), NaiveMCAgent(), 10, debug = True, use_gating = False, gating_threshold = 0.0)
+result = DuelManager().play_games(RandomAgent(), NaiveMCAgent(), 10, debug=True, use_gating=False, gating_threshold=0.0)
 
-print("result is " + str(result[0]) + ' ' + str(result[1]))
-
-'''
+print("result is " + str(result[0]) + " " + str(result[1]))
+"""
 game_count = 20
 
 bot0 = RandomAgent()
@@ -49,4 +47,4 @@ for i in range(game_count):
 			print("p1 won")
 
 print("scores are " + str(score0) + " to " + str(score1))
-'''
+"""

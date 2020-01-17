@@ -1,442 +1,451 @@
-from BatchedMCTS import BatchedMCTS
-from MCTS import MCTS
-from UtttBoard import UtttBoard
-from NeuralNet import NeuralNet
-from SaltZeroAgent import SaltZeroAgent
-import dotdict
-import pickle
-import time
-import sys
-from DuelManager import DuelManager
-from mem_top import mem_top
-
-
-
-
 import gc
 import glob
 import os.path
+import pickle
+import sys
+import time
 
-params = dotdict.dotdict({
-	'temperature_threshold': 12,
-	'game_generation_batch_size': 10, # how many games to generate before we save a file
-	'train_game_size': 500, # how many games before we train a new network
-	'duel_game_count': 40,
-	'gating_threshold': 0.51,
-	'play_batch_size': 100,
-	'visits': 200
-})
+import dotdict
+from BatchedMCTS import BatchedMCTS
+from DuelManager import DuelManager
+from MCTS import MCTS
+from mem_top import mem_top
+from NeuralNet import NeuralNet
+from SaltZeroAgent import SaltZeroAgent
+from UtttBoard import UtttBoard
 
-class TrainingManager():
+params = dotdict.dotdict(
+    {
+        "temperature_threshold": 12,
+        "game_generation_batch_size": 10,  # how many games to generate before we save a file
+        "train_game_size": 500,  # how many games before we train a new network
+        "duel_game_count": 40,
+        "gating_threshold": 0.51,
+        "play_batch_size": 100,
+        "visits": 200,
+    }
+)
 
-	def __init__(self):
-		self.load_latest_network()
-	
-	def play_many_games(self, num_games = params.play_batch_size, is_training = True):
-		boards = [UtttBoard() for i in range(num_games)]
 
-		move_counter = 0
-		training_data = [[] for i in range(num_games)]
+class TrainingManager:
+    def __init__(self):
+        self.load_latest_network()
 
-		unfinished_games = num_games
+    def play_many_games(self, num_games=params.play_batch_size, is_training=True):
+        boards = [UtttBoard() for i in range(num_games)]
 
-		mcts_items = [BatchedMCTS() for i in range(num_games)] #put here for tree reuse
+        move_counter = 0
+        training_data = [[] for i in range(num_games)]
 
-		while unfinished_games > 0:
+        unfinished_games = num_games
 
-			start = time.time()
-			#mcts_items = [BatchedMCTS() for i in range(num_games)]
+        mcts_items = [BatchedMCTS() for i in range(num_games)]  # put here for tree reuse
 
-			for i in range(params.visits):
+        while unfinished_games > 0:
 
-				batched_queries = []
-				no_input = [False for j in range(num_games)]
+            start = time.time()
+            # mcts_items = [BatchedMCTS() for i in range(num_games)]
 
-				for j in range(num_games):
+            for i in range(params.visits):
 
-					board = boards[j]
+                batched_queries = []
+                no_input = [False for j in range(num_games)]
 
-					if board.get_game_ended():
-						no_input[j] = True
-						continue
+                for j in range(num_games):
 
-					query = mcts_items[j].before_visit(board, is_training)
+                    board = boards[j]
 
-					#print("got query " + query.to_string() if query is not None else "None")
+                    if board.get_game_ended():
+                        no_input[j] = True
+                        continue
 
-					if query is not None:
-						batched_queries.append(query.to_nn_input_vector())
-					else:
-						no_input[j] = True
+                    query = mcts_items[j].before_visit(board, is_training)
 
-				
-				if len(batched_queries) > 0:
-					#mini_start = time.time()
-					results = self.net.predict_on_batch(batched_queries)
-					#print("evaluated positions in " + str(time.time() - mini_start))
-					#print("got results " + str(results))
-				
+                    # print("got query " + query.to_string() if query is not None else "None")
 
-				counter = 0
-				for j in range(num_games):
-					board = boards[j]
+                    if query is not None:
+                        batched_queries.append(query.to_nn_input_vector())
+                    else:
+                        no_input[j] = True
 
-					if board.get_game_ended():
-						continue
+                if len(batched_queries) > 0:
+                    # mini_start = time.time()
+                    results = self.net.predict_on_batch(batched_queries)
+                    # print("evaluated positions in " + str(time.time() - mini_start))
+                    # print("got results " + str(results))
 
-					if no_input[j]:
-						mcts_items[j].after_visit(board, None, None)
-					else:
-						mcts_items[j].after_visit(board, results[0][counter], results[1][counter][0])
-						counter += 1
+                counter = 0
+                for j in range(num_games):
+                    board = boards[j]
 
+                    if board.get_game_ended():
+                        continue
 
-			for i in range(num_games):
-				board = boards[i]
+                    if no_input[j]:
+                        mcts_items[j].after_visit(board, None, None)
+                    else:
+                        mcts_items[j].after_visit(board, results[0][counter], results[1][counter][0])
+                        counter += 1
 
-				if not board.get_game_ended():
-					pi, move = mcts_items[i].get_probabilities_and_best_move(board, (1 if move_counter < params.temperature_threshold else 0) if is_training else 0)
+            for i in range(num_games):
+                board = boards[i]
 
-					symmetries = board.get_symmetries(pi)
-					training_data[i] += symmetries
+                if not board.get_game_ended():
+                    pi, move = mcts_items[i].get_probabilities_and_best_move(
+                        board, (1 if move_counter < params.temperature_threshold else 0) if is_training else 0
+                    )
 
-					board.process_move(move)
+                    symmetries = board.get_symmetries(pi)
+                    training_data[i] += symmetries
 
-					#print("game appears")
-					#print(board.to_string())
+                    board.process_move(move)
 
-					if board.get_game_ended():
-						unfinished_games -= 1
+                    # print("game appears")
+                    # print(board.to_string())
 
-			print("finished move " + str(move_counter) + " in time " + str(time.time() - start))
-			move_counter += 1
+                    if board.get_game_ended():
+                        unfinished_games -= 1
 
+            print("finished move " + str(move_counter) + " in time " + str(time.time() - start))
+            move_counter += 1
 
-		gc.collect()
+        gc.collect()
 
-		answer = [[], [], []]
-		for i in range(num_games):
-			board = boards[i]
-			this_training_data = training_data[i]
+        answer = [[], [], []]
+        for i in range(num_games):
+            board = boards[i]
+            this_training_data = training_data[i]
 
-			print(board.to_string())
+            print(board.to_string())
 
-			result = board.get_win_result()
+            result = board.get_win_result()
 
-			print("result is " + str(result))
+            print("result is " + str(result))
 
-			if result == 2:
-				result = -1 # format result to be -1, 0, or 1 in accordance with paper
-				# -1 means second player won, 1 means first won
+            if result == 2:
+                result = -1  # format result to be -1, 0, or 1 in accordance with paper
+                # -1 means second player won, 1 means first won
 
-			# augment training data with the result
+            # augment training data with the result
 
-			# also reformat the training data while we're at it
+            # also reformat the training data while we're at it
 
-			training_input = [None] * len(this_training_data)
-			training_policy_output = [None] * len(this_training_data)
-			training_value_output = [None] * len(this_training_data)
+            training_input = [None] * len(this_training_data)
+            training_policy_output = [None] * len(this_training_data)
+            training_value_output = [None] * len(this_training_data)
 
-			for j in range(len(this_training_data)):
-				whose_turn = (j // 8) % 2
+            for j in range(len(this_training_data)):
+                whose_turn = (j // 8) % 2
 
-				#win_result = -result if whose_turn == 0 else result
-				win_result = result if whose_turn == 0 else -result
+                # win_result = -result if whose_turn == 0 else result
+                win_result = result if whose_turn == 0 else -result
 
-				training_input[j] = this_training_data[j][0]
-				training_policy_output[j] = this_training_data[j][1]
-				training_value_output[j] = win_result
+                training_input[j] = this_training_data[j][0]
+                training_policy_output[j] = this_training_data[j][1]
+                training_value_output[j] = win_result
 
-			answer[0].extend(training_input)
-			answer[1].extend(training_policy_output)
-			answer[2].extend(training_value_output)
-			#return [training_input, training_policy_output, training_value_output]
+            answer[0].extend(training_input)
+            answer[1].extend(training_policy_output)
+            answer[2].extend(training_value_output)
+            # return [training_input, training_policy_output, training_value_output]
 
-		return answer
+        return answer
 
-	def play_one_game(self):
-		board = UtttBoard()
+    def play_one_game(self):
+        board = UtttBoard()
 
-		move_counter = 0
+        move_counter = 0
 
-		training_data = []
+        training_data = []
 
-		print("playing new game")
-		while not board.get_game_ended():
-			# in original paper they randomly rotate board, doubt that's necessary
+        print("playing new game")
+        while not board.get_game_ended():
+            # in original paper they randomly rotate board, doubt that's necessary
 
-			pi, move = MCTS(self.net).get_probabilities_and_best_move(board, True, 1 if move_counter < params.temperature_threshold else 0)
-			move_counter += 1
+            pi, move = MCTS(self.net).get_probabilities_and_best_move(
+                board, True, 1 if move_counter < params.temperature_threshold else 0
+            )
+            move_counter += 1
 
-			#print("pi is " + str(pi))
+            # print("pi is " + str(pi))
 
-			print("move " + str(move_counter))
-			#print(board.to_string())
+            print("move " + str(move_counter))
+            # print(board.to_string())
 
-			symmetries = board.get_symmetries(pi)
-			training_data += symmetries
+            symmetries = board.get_symmetries(pi)
+            training_data += symmetries
 
-			#print("symmetries " + str(symmetries))
+            # print("symmetries " + str(symmetries))
 
-			board.process_move(move)
+            board.process_move(move)
 
-			#print("training_data size is " + str(sys.getsizeof(training_data)))
+            # print("training_data size is " + str(sys.getsizeof(training_data)))
 
-		gc.collect()
+        gc.collect()
 
-		#print("mem top")
-		#print(mem_top())
+        # print("mem top")
+        # print(mem_top())
 
-		print(board.to_string())
+        print(board.to_string())
 
-		result = board.get_win_result()
+        result = board.get_win_result()
 
-		print("result is " + str(result))
+        print("result is " + str(result))
 
-		if result == 2:
-			result = -1 # format result to be -1, 0, or 1 in accordance with paper
-			# -1 means second player won, 1 means first won
+        if result == 2:
+            result = -1  # format result to be -1, 0, or 1 in accordance with paper
+            # -1 means second player won, 1 means first won
 
-		# augment training data with the result
+        # augment training data with the result
 
-		# also reformat the training data while we're at it
+        # also reformat the training data while we're at it
 
-		training_input = [None] * len(training_data)
+        training_input = [None] * len(training_data)
 
-		training_policy_output = [None] * len(training_data)
+        training_policy_output = [None] * len(training_data)
 
-		training_value_output = [None] * len(training_data)
+        training_value_output = [None] * len(training_data)
 
-		for i in range(len(training_data)):
+        for i in range(len(training_data)):
 
-			whose_turn = (i // 8) % 2
+            whose_turn = (i // 8) % 2
 
-			#win_result = -result if whose_turn == 0 else result
-			win_result = result if whose_turn == 0 else -result
+            # win_result = -result if whose_turn == 0 else result
+            win_result = result if whose_turn == 0 else -result
 
-			training_input[i] = training_data[i][0]
-			training_policy_output[i] = training_data[i][1]
-			training_value_output[i] = win_result
+            training_input[i] = training_data[i][0]
+            training_policy_output[i] = training_data[i][1]
+            training_value_output[i] = win_result
 
-		return [training_input, training_policy_output, training_value_output]
+        return [training_input, training_policy_output, training_value_output]
 
-	def generate_training_data_bulk(self, num_games):
-		games_played = 0
-		answer = [[], [], []]
+    def generate_training_data_bulk(self, num_games):
+        games_played = 0
+        answer = [[], [], []]
 
-		while games_played < num_games:
-			data = self.play_many_games()
+        while games_played < num_games:
+            data = self.play_many_games()
 
-			self.save_data(data, params.play_batch_size)
+            self.save_data(data, params.play_batch_size)
 
-			games_played += params.play_batch_size
+            games_played += params.play_batch_size
 
+    def generate_training_data(self, num_games, save_interval=10):
 
+        # training_data = [[], [], []]
+        save_interval_data = [[], [], []]
 
-	def generate_training_data(self, num_games, save_interval = 10): 
+        for i in range(num_games):
+            print("generating game " + str(i))
 
-		#training_data = [[], [], []]
-		save_interval_data = [[], [], []]
+            start = time.time()
 
-		for i in range(num_games):
-			print("generating game " + str(i))
+            new_data = self.play_one_game()
+            for j in range(3):
+                # training_data[j].extend(new_data[j])
+                save_interval_data[j].extend(new_data[j])
 
-			start = time.time()
+            print("done, took " + str(time.time() - start))
 
-			new_data = self.play_one_game()
-			for j in range(3):
-				#training_data[j].extend(new_data[j])
-				save_interval_data[j].extend(new_data[j])
+            if (i + 1) % save_interval == 0:
+                self.save_data(save_interval_data, save_interval)
+                save_interval_data = [[], [], []]
 
-			print("done, took " + str(time.time() - start))
+        # return training_data
 
-			if (i + 1) % save_interval == 0:
-				self.save_data(save_interval_data, save_interval)
-				save_interval_data = [[], [], []]
+    def save_data(self, data, num_games):
+        file_counter = 0
 
-		#return training_data
+        if not os.path.exists("games"):
+            os.makedirs("games")
 
-	def save_data(self, data, num_games):
-		file_counter = 0
+        string_prefix = "games/" + str(num_games) + "_"
+        file_string = string_prefix + str(file_counter) + ".traintactoe"
 
-		if not os.path.exists('games'):
-			os.makedirs('games')
+        while os.path.isfile(file_string):
+            file_counter += 1
+            file_string = string_prefix + str(file_counter) + ".traintactoe"
 
-		string_prefix = 'games/' + str(num_games) + '_'
-		file_string = string_prefix + str(file_counter) + '.traintactoe'
+        pickle.dump(data, open(file_string, "wb"))
 
-		while os.path.isfile(file_string):
-			file_counter += 1
-			file_string = string_prefix + str(file_counter) + '.traintactoe'
+    def load_latest_network(self):
+        file_counter = 0
 
-		pickle.dump(data, open(file_string, 'wb'))
+        self.net = NeuralNet()
 
-	def load_latest_network(self):
-		file_counter = 0
+        if not os.path.exists("models") or not os.path.isfile("models/best_0.h5"):
+            os.makedirs("models")
 
-		self.net = NeuralNet()
+            self.net.save("models", "best_0.h5")
+            self.model_string = "best_0.h5"
+            return
 
-		if not os.path.exists('models') or not os.path.isfile("models/best_0.h5"):
-			os.makedirs('models')
+        string_prefix = "models/best_"
+        file_string = string_prefix + str(file_counter) + ".h5"
 
-			self.net.save('models', "best_0.h5")
-			self.model_string = "best_0.h5"
-			return
+        while os.path.isfile(file_string):
+            file_counter += 1
+            file_string = string_prefix + str(file_counter) + ".h5"
 
-		string_prefix = 'models/best_'
-		file_string = string_prefix + str(file_counter) + '.h5'
+        # decrement to find existing one
 
-		while os.path.isfile(file_string):
-			file_counter += 1
-			file_string = string_prefix + str(file_counter) + '.h5'
+        file_counter -= 1
+        file_string = string_prefix + str(file_counter) + ".h5"
 
-		# decrement to find existing one
+        print("loaded best network " + file_string[7:-3])
 
-		file_counter -= 1
-		file_string = string_prefix + str(file_counter) + '.h5'
+        self.net.load("models", file_string[7:])
+        self.model_string = file_string[7:-3]
+        self.model_counter = file_counter
 
-		print("loaded best network " + file_string[7:-3])
+    def count_num_saved_games(self):
+        # return num games
+        num_games = 0
 
-		self.net.load("models", file_string[7:])
-		self.model_string = file_string[7:-3]
-		self.model_counter = file_counter
+        if not os.path.exists("games"):
+            os.makedirs("games")
+            return num_games
 
-	def count_num_saved_games(self):
-		# return num games
-		num_games = 0
+        for file in glob.glob("games/" + self.model_string + "*"):
+            this_games = int(file.split("_")[2])
 
-		if not os.path.exists('games'):
-			os.makedirs('games')
-			return num_games
+            num_games += this_games
 
-		for file in glob.glob("games/" + self.model_string + "*"):
-			this_games = int(file.split("_")[2])
+        return num_games
 
-			num_games += this_games
+    def parse_cpp_file(self, file):
+        answer = [[], [], []]
 
-		return num_games
+        with open(file, "r") as f:
+            raw_data = f.readlines()
 
-	def parse_cpp_file(self, file):
-		answer = [[], [], []]
+            counter = 0
+            for example in raw_data:
 
-		with open (file, "r") as f:
-			raw_data = f.readlines()
+                split_example = example.split(" ")
 
-			counter = 0
-			for example in raw_data:
+                training_input = [(1 if split_example[0][i] == "1" else 0) for i in range(189)]
+                training_policy_output = [float(split_example[i + 1]) for i in range(81)]
+                training_value_output = float(split_example[1 + 81])
 
-				split_example = example.split(' ')
+                answer[0].append(training_input)
+                answer[1].append(training_policy_output)
+                answer[2].append(training_value_output)
 
-				training_input = [(1 if split_example[0][i] == '1' else 0) for i in range(189)]
-				training_policy_output = [float(split_example[i + 1]) for i in range(81)]
-				training_value_output = float(split_example[1 + 81])
+                counter += 1
 
-				answer[0].append(training_input)
-				answer[1].append(training_policy_output)
-				answer[2].append(training_value_output)
+                if counter % 1000 == 0:
+                    print(
+                        "training example "
+                        + str(training_input)
+                        + " output "
+                        + str(training_policy_output)
+                        + " value "
+                        + str(training_value_output)
+                    )
+                    print("at " + str(counter))
 
-				counter += 1
+        return answer
 
-				if (counter % 1000 == 0):
-					print("training example " + str(training_input) + " output " + str(training_policy_output) + " value " + str(training_value_output))
-					print("at " + str(counter))
+    def load_training_data(self):
 
+        # return num games, training data
 
-		return answer;
+        num_games = 0
+        training_data = [[], [], []]
 
+        if not os.path.exists("games"):
+            os.makedirs("games")
+            return num_games, training_data
 
-	def load_training_data(self):
+        for file in glob.glob("games/*"):
 
-		# return num games, training data
+            print("Loading training data from file " + file)
 
-		num_games = 0
-		training_data = [[], [], []]
+            this_games = int(file.split("games\\")[1].split("_")[0])
 
-		if not os.path.exists('games'):
-			os.makedirs('games')
-			return num_games, training_data
+            parse_cpp = file.split(".")[1] == "cpptactoe"
 
-		for file in glob.glob("games/*"):
+            num_games += this_games
 
-			print("Loading training data from file " + file)
+            # if num_games > max_games:
+            # 	return num_games - this_games, training_data
 
-			this_games = int(file.split("games\\")[1].split('_')[0])
+            if parse_cpp:
+                temp = self.parse_cpp_file(file)
+            else:
+                temp = pickle.load(open(file, "rb"))
 
-			parse_cpp = file.split('.')[1] == "cpptactoe"
+            for i in range(3):
+                training_data[i].extend(temp[i])
 
-			num_games += this_games
+            # now delete the file
 
-			#if num_games > max_games:
-			#	return num_games - this_games, training_data
+            os.remove(file)
 
-			if parse_cpp:
-				temp = self.parse_cpp_file(file)
-			else:
-				temp = pickle.load(open(file, "rb"))
+        return num_games, training_data
 
+    def save_model_no_optimizer(self):
+        # needed for frugally deep so we can generate games in C++ and kill the insane python overhead
+        # when running 200 games in parallel the python overhead is literally > 98% of the time spent, 85 seconds for first move, 0.4-0.6 spent on neural net
 
-			for i in range(3):
-				training_data[i].extend(temp[i])
+        self.net.save("models", "best_" + str(self.model_counter) + "_no_opt.h5", False)
 
-			# now delete the file
+    def train_and_eval_new_network(self):
+        # training_data = self.generate_training_data(params.train_game_size)
 
-			os.remove(file)
+        if self.count_num_saved_games() < params.train_game_size:
+            print("Not enough data to train")
+            return
 
+        num_games, training_data = self.load_training_data()
 
+        print("Loaded " + str(num_games) + " games")
 
-		return num_games, training_data
+        self.net.save("models", "temp.h5")
+        new_net = NeuralNet()
+        new_net.load("models", "temp.h5")
 
+        new_net.train(training_data)
 
-	def save_model_no_optimizer(self):
-		# needed for frugally deep so we can generate games in C++ and kill the insane python overhead
-		# when running 200 games in parallel the python overhead is literally > 98% of the time spent, 85 seconds for first move, 0.4-0.6 spent on neural net
+        # compare 2 nets
 
-		self.net.save("models", "best_" + str(self.model_counter) + "_no_opt.h5", False)
+        result = DuelManager().play_games(
+            SaltZeroAgent(new_net),
+            SaltZeroAgent(self.net),
+            params.duel_game_count,
+            debug=True,
+            use_gating=True,
+            gating_threshold=params.gating_threshold,
+        )
 
+        print("finished dueling, result is " + str(result[0]) + " to " + str(result[1]) + " new to old")
 
-	def train_and_eval_new_network(self):
-		#training_data = self.generate_training_data(params.train_game_size)
+        if result[0] / (result[0] + result[1]) >= params.gating_threshold:
+            # Passed!
 
-		if self.count_num_saved_games() < params.train_game_size:
-			print("Not enough data to train")
-			return
+            print("Passed! saving new net")
+            new_net.save("models", "best_" + str(self.model_counter + 1) + ".h5")
+            self.model_counter += 1
+            self.net = new_net
 
-		num_games, training_data = self.load_training_data()
+    def train_new_network(self):
+        num_games, training_data = self.load_training_data()
+        self.net.train(training_data)
 
-		print("Loaded " + str(num_games) + " games")
+        print("Finished training! saving new net")
+        self.net.save("models", "best_" + str(self.model_counter + 1) + ".h5")
+        self.model_counter += 1
 
-		self.net.save('models', "temp.h5")
-		new_net = NeuralNet()
-		new_net.load('models', "temp.h5")
+    def compare_networks(self):
+        # Use this just for now to check
+        result = DuelManager().play_games(
+            SaltZeroAgent(new_net),
+            SaltZeroAgent(self.net),
+            params.duel_game_count,
+            debug=True,
+            use_gating=True,
+            gating_threshold=params.gating_threshold,
+        )
 
-		new_net.train(training_data)
-
-		# compare 2 nets
-
-		result = DuelManager().play_games(SaltZeroAgent(new_net), SaltZeroAgent(self.net), params.duel_game_count, debug = True, \
-			use_gating = True, gating_threshold = params.gating_threshold)
-
-		print("finished dueling, result is " + str(result[0]) + " to " + str(result[1]) + " new to old")
-
-		if (result[0] / (result[0] + result[1]) >= params.gating_threshold):
-			# Passed!
-
-			print("Passed! saving new net")
-			new_net.save("models", "best_" + str(self.model_counter + 1) + ".h5")
-			self.model_counter += 1
-			self.net = new_net
-
-	def train_new_network(self):
-		num_games, training_data = self.load_training_data()
-		self.net.train(training_data)
-
-		print("Finished training! saving new net")
-		self.net.save("models", "best_" + str(self.model_counter + 1) + ".h5")
-		self.model_counter += 1
-
-	def compare_networks(self):
-		# Use this just for now to check
-		result = DuelManager().play_games(SaltZeroAgent(new_net), SaltZeroAgent(self.net), params.duel_game_count, debug = True, \
-			use_gating = True, gating_threshold = params.gating_threshold)
-
-		print("finished dueling, result is " + str(result[0]) + " to " + str(result[1]) + " new to old")
+        print("finished dueling, result is " + str(result[0]) + " to " + str(result[1]) + " new to old")
