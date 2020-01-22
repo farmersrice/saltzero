@@ -17,7 +17,7 @@ typedef pair<int, pair<int, pair<int, int> > > pair4;
 #define remove pop
 #define all(x) x.begin(), x.end()
 
-//g++ -O2 -std=gnu++14 compare_networks.cpp UtttBoard.cpp NetworkWrapper.cpp TrainingManager.cpp MCTS.cpp -L"C:\Users\farmersrice\AppData\Local\Programs\Python\Python37\libs" -lpython37 -o compare -I"C:\Users\farmersrice\AppData\Local\Programs\Python\Python37\include"
+//g++ -O2 -std=gnu++14 compare_networks.cpp UtttBoard.cpp NetworkWrapper.cpp TrainingManager.cpp MCTS.cpp -L"C:\Users\farmersrice\AppData\Local\Programs\Python\Python37\libs" -lpython37 -o compare_networks -I"C:\Users\farmersrice\AppData\Local\Programs\Python\Python37\include"
 
 
 int main() {
@@ -32,5 +32,3 @@ int main() {
 
 	t.compareBestToLatest();
 }
-
-//GCD GCD GCD USE GCD IN MATH

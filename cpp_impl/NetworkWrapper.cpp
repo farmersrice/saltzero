@@ -4,6 +4,7 @@
 //#include "include/Python.h"
 #include <sstream>
 #include <fstream>
+#include <mutex>
 
 using namespace std;
 
@@ -40,6 +41,16 @@ NetworkWrapper::NetworkWrapper() {
 	pFuncLoadModel = PyDict_GetItemString(pDict, (char*)"load_model");
 	pFuncPredict = PyDict_GetItemString(pDict, (char*)"predict");
 }
+/*
+NetworkWrapper::~NetworkWrapper() {
+	cout << "Finalizing interpreter " << endl;
+
+	PyObject *pFuncResetKeras = PyDict_GetItemString(pDict, (char*)"reset_keras");
+	PyObject_CallObject(pFuncResetKeras, NULL);
+	//PyRun_SimpleString("from numba import cuda;print('do we have cuda');print(cuda);cuda.select_device(0);cuda.close();cuda.select_device(0)");
+	cout << "GPU memory should be freed." << endl;
+	Py_Finalize();
+}*/
 
 void NetworkWrapper::loadNetwork(int modelNum, int index) {
 	pArgs = PyTuple_New(2);
@@ -89,55 +100,7 @@ void NetworkWrapper::loadLatestNetwork(int index) {
 	loadNetwork(latestNetwork, index);
 }
 
-inline vector<float> parseFloats(string s, int length) {
-	vector<float> answer(length);
-
-	int counter = 0;
-	int index = 0;
-	while (index < s.size()) {
-		while (index < s.size() && (s[index] == '\'' || s[index] == ' ')) index++;
-
-		if (index >= s.size()) break;
-
-		//Starting a new value
-
-		int start = index;
-		int end = index;
-
-		while (end < s.size() && (s[end] != '\'' && s[end] != ' ')) end++;
-
-		bool negative = false;
-		if (s[start] == '-') {
-			negative = true;
-			start++;
-		}
-		int doubleIndex = end - start;
-		for (int j = start; j < end; j++) {
-			if (s[j] == '.') {
-				doubleIndex = j - start;
-				break;
-			}
-		}
-
-		double curPower = 1.0;
-		for (int j = 0; j < doubleIndex - 1; j++) {
-			curPower *= 10.0;
-		}
-
-		double thisAns = 0.0;
-		for (int j = start; j < end; j++) {
-			if (s[j] == '.') continue;
-			thisAns += curPower * (s[j] - '0');
-			curPower /= 10.0;
-		}
-
-		answer[counter++] = (negative ? -thisAns : thisAns);
-		index = end;
-
-	}
-
-	return answer;
-}
+mutex pythonLock;
 
 vector<pair<vector<float>, float>> NetworkWrapper::predict(vector<vector<float>> inputs, int index) {
 	//auto start = clock();
@@ -150,28 +113,22 @@ vector<pair<vector<float>, float>> NetworkWrapper::predict(vector<vector<float>>
 		}
 	}
 
+	pythonLock.lock();
 	PyObject *queryStringArgs = PyTuple_New(2);
-	PyTuple_SET_ITEM(queryStringArgs, 0, PyUnicode_FromString(vectorToString(queries).c_str()));
+	PyTuple_SET_ITEM(queryStringArgs, 0, PyUnicode_FromString(vectorToString(queries).c_str())); //this is faster than from string bytes
 	PyTuple_SET_ITEM(queryStringArgs, 1, PyLong_FromLong(index));
 
 	//auto mid = clock();
 
 	PyObject *queryResult = PyObject_CallObject(pFuncPredict, queryStringArgs);
 
-	PyObject *objectsRepresentation = PyObject_Repr(queryResult);
-	const char* s = PyUnicode_AsUTF8(objectsRepresentation);
-	string answerString(s);
+	const char *s = PyBytes_AS_STRING(queryResult);
+	const float *parsed = reinterpret_cast<const float*>(s);
 
 	//auto mid2 = clock();
 
-	Py_DECREF(queryStringArgs);
-	Py_DECREF(queryResult);
-	Py_DECREF(objectsRepresentation);
-
-
 	vector<pair<vector<float>, float>> answer(inputs.size());
 
-	vector<float> parsed = parseFloats(answerString, inputs.size() * 82);
 
 	counter = 0;
 	for (int i = 0; i < inputs.size(); i++) {
@@ -192,5 +149,10 @@ vector<pair<vector<float>, float>> NetworkWrapper::predict(vector<vector<float>>
 	//cout << "after python time " << (end - mid2) / (1.0 * CLOCKS_PER_SEC ) << endl;
 	//cout << "total time " << (end - start) / (1.0 * CLOCKS_PER_SEC ) << endl;
 
+	Py_DECREF(queryStringArgs);
+	Py_DECREF(queryResult);
+	pythonLock.unlock();
+
+	
 	return answer;
 }

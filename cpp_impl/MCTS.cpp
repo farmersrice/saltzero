@@ -177,8 +177,6 @@ void MCTS::afterVisit(UtttBoard board, vector<float> netpi, float netv) {
 }
 
 vector<float> MCTS::getProbabilities(UtttBoard board) {
-	ll boardHash = board.hash();
-
 	vector<int> validMoves = board.getValidMoves();
 
 	vector<float> localN(81, 0.0f);

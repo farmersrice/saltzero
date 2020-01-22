@@ -1,8 +1,10 @@
 from TrainingManager import TrainingManager
 from NeuralNet import NeuralNet
 
+from numba import cuda
+
 import os
-os.environ['CUDA_VISIBLE_DEVICES'] = '-1' # no gpu
+#os.environ['CUDA_VISIBLE_DEVICES'] = '-1' # no gpu.
 
 
 from classical_agents.NaiveMCAgent import NaiveMCAgent
@@ -14,10 +16,9 @@ import tensorflow as tf
 
 tf.compat.v1.disable_eager_execution()
 
-#test against random and naive mc
-
 temp_manager = TrainingManager()
 
 temp_manager.train_new_network()
 
-#temp_manager.play_many_games(1, False)
+cuda.select_device(0)
+cuda.close() # hopefully this frees the memory and allows us to use GPU for training without out of memory

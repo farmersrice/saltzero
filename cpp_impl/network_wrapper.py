@@ -2,7 +2,10 @@ import tensorflow as tf
 import numpy as np
 import time
 import gc
+import struct
 from mem_top import mem_top
+
+# Unfortunately tensorflow doesn't allow us to release the used gpu memory in an easy fashion, so we have to create a separate executable
 
 
 import os,sys,inspect,psutil # if it crashes for no reason, might need to pip install psutil
@@ -13,13 +16,17 @@ sys.path.insert(0,parentdir)
 from NeuralNet import NeuralNet
 from UtttBoard import UtttBoard
 
-os.environ['CUDA_VISIBLE_DEVICES'] = '-1' # no gpu
+#os.environ['CUDA_VISIBLE_DEVICES'] = '-1' # no gpu
 
 # do it this way since we only have one python interpreter at a time
 model0 = NeuralNet()
 model1 = NeuralNet()
 
 tf.compat.v1.disable_eager_execution()
+
+float_strings = ['f' * 82 * i for i in range(1001)];
+
+print(float_strings[10])
 
 print("preprocess done")
 
@@ -43,30 +50,6 @@ def predict(vector_string, index):
 	queries = [+(c=='1') for c in vector_string]
 	queries = [queries[189 * i : 189 * (i + 1)] for i in range(num_queries)]
 
-	#several alternative, slower ways below
-
-	#for i in range(num_queries):
-	#	for j in range(189):
-	#		if vector_string[i * 189 + j] == '1':
-	#			queries[i][j] = 1
-
-	#queries = np.array([+(c=='1') for c in vector_string])
-	#queries = [queries[189 * i : 189 * (i + 1)] for i in range(num_queries)]
-
-
-	#bstr = vector_string.encode('ascii')
-	#queries = [c - 48 for c in bstr]
-	#queries = [queries[189 * i : 189 * (i + 1)] for i in range(num_queries)]
-
-	#bstr = vector_string.encode('ascii')
-	#queries = [[bstr[i * 189 + j] - 48 for j in range(189)] for i in range(num_queries)]
-
-	#print(queries)
-	#queries = [[1 if vector_string[i * 189 + j] == '1' else 0 for j in range(189)] for i in range(num_queries)]
-
-	#print("got query string " + vector_string)
-	#print("num queries is " + str(num_queries))
-
 	mini_time = time.time()
 
 	#print("before query time " + str(mini_time - start))
@@ -84,20 +67,20 @@ def predict(vector_string, index):
 		items[counter] = result[1][i][0]
 		counter += 1
 
-
-
+	#print("result get " + str(items[0]) + " length is " + str(len(items)))
 	
 	str_time = time.time()
 
-	answer = " ".join(f'{i:.9f}' for i in items)
-	#answer = " ".join("{:.9f}".format(i) for i in items)
+	#try:
+	answer = struct.pack(float_strings[num_queries], *items)
+	#except Exception as e: 
+	#	print(e)
 
 	#print("string time " + str(time.time() - str_time))
 
-	#print(answer)
 	end = time.time()
 
-	#gc.collect()
-
+	#print("answer length " + str(len(answer)))
+	#assert(len(answer) == 82 * 1000 * 4)
 	#print("total python time taken " + str(end - start))
 	return answer

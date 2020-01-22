@@ -15,6 +15,7 @@ struct NetworkWrapper {
 	PyObject *pName, *pModule, *pDict, *pFuncLoadModel, *pValue, *pArgs, *pFuncPredict;
 	
 	NetworkWrapper();
+	//~NetworkWrapper(); //finalize interpreter 
 	void loadNetwork(int modelNum, int index);
 	int getBestNetwork();
 	int getLatestNetwork();

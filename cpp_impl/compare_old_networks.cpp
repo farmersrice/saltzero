@@ -34,5 +34,3 @@ int main() {
 
 	cout << " best " << result.first << " old " << result.second << endl;
 }
-
-//GCD GCD GCD USE GCD IN MATH

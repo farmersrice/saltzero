@@ -1,7 +1,7 @@
 import tensorflow as tf
 from tensorflow import keras
 from tensorflow.keras import regularizers
-from tensorflow.keras.layers import Dense
+from tensorflow.keras.layers import Dense, Add, Activation
 
 import dotdict
 
@@ -12,10 +12,7 @@ import numpy as np
 import os
 
 params = dotdict.dotdict({
-	'learning_rate': 0.001, # from original this should be good until 400k steps of 2k mini batches = 800m positions
-	# if we assume each game has 60 * 8 positions, we would need 1.6m games to reach even just using all positions
-	# probably don't have enough resources to even approach that, so hardcode for now and change later
-	# (switch to piecewise constant later)
+	'learning_rate': 0.01,
 	'epochs': 1,
 	'c': 0.0001, # from original 
 	'momentum': 0.9 # from original
@@ -37,8 +34,49 @@ params = dotdict.dotdict({
 
 
 class NeuralNetTensorflow():
-	def __init__(self):
+	def new_network(self):
+		def resnet_block(x):
+			identity = x
+			x = Dense(1024, activation = 'relu', kernel_regularizer = regularizers.l2(params.c))(x)
+			x = Dense(1024, kernel_regularizer = regularizers.l2(params.c))(x) # no activation
+			x = Add()([x, identity])
+			x = Activation('relu')(x)
 
+			return x
+
+
+		visible = keras.layers.Input(shape=(189))
+		x = Dense(1024, activation = 'relu', kernel_regularizer = regularizers.l2(params.c))(visible)
+
+		# 7 resnet blocks
+		x = resnet_block(x)
+		x = resnet_block(x)
+		x = resnet_block(x)
+		x = resnet_block(x)
+		x = resnet_block(x)
+		x = resnet_block(x)
+		x = resnet_block(x)
+
+		policy_hidden = Dense(512, activation = 'relu', kernel_regularizer = regularizers.l2(params.c))(x)
+		policy_output = Dense(81, activation = 'softmax', kernel_regularizer = regularizers.l2(params.c))(policy_hidden)
+
+		value_hidden = Dense(512, activation = 'relu', kernel_regularizer = regularizers.l2(params.c))(x)
+		value_output = Dense(1, activation = 'tanh', kernel_regularizer = regularizers.l2(params.c))(value_hidden)
+
+		self.model = keras.models.Model(inputs = visible, outputs = [policy_output, value_output])
+
+		opt = keras.optimizers.SGD(learning_rate = params.learning_rate, momentum = params.momentum)
+		#opt = keras.optimizers.Adam(learning_rate = params.learning_rate)
+
+		self.model.compile(loss = ['categorical_crossentropy', 'mean_squared_error'],
+			optimizer = opt, 
+			metrics = ['categorical_accuracy', 'mse'], loss_weights = [1, 0.1])
+
+		print(self.model.summary())
+
+		# Old network architecture below
+
+		'''
 		visible = keras.layers.Input(shape=(189))
 
 		x = Dense(512, activation = 'relu', kernel_regularizer = regularizers.l2(params.c))(visible)
@@ -64,7 +102,7 @@ class NeuralNetTensorflow():
 			metrics = ['categorical_accuracy', 'mse'], loss_weights = [1, 1])
 
 		print(self.model.summary())
-
+		'''
 	
 	def predict(self, board):
 		#	print(np.asarray(board.to_nn_input_vector()).reshape(-1, 189))

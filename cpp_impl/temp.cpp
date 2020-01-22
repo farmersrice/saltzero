@@ -18,14 +18,10 @@ typedef pair<int, pair<int, pair<int, int> > > pair4;
 #define remove pop
 #define all(x) x.begin(), x.end()
 
-//g++ -O2 -std=gnu++14 temp.cpp UtttBoard.cpp NetworkWrapper.cpp TrainingManager.cpp MCTS.cpp -L"C:\Users\farmersrice\AppData\Local\Programs\Python\Python37\libs" -lpython37
+//g++ -O2 -std=gnu++14 temp.cpp UtttBoard.cpp NetworkWrapper.cpp TrainingManager.cpp MCTS.cpp -L"C:\Users\farmersrice\AppData\Local\Programs\Python\Python37\libs" -lpython37 -I"C:\Users\farmersrice\AppData\Local\Programs\Python\Python37\include"
 
 
 int main() {
-	if (fopen("FILENAME.in", "r")) {
-		freopen("FILENAME.in", "r", stdin);
-		freopen("FILENAME.out", "w", stdout);
-	}
 	ios_base::sync_with_stdio(false); 
 	cin.tie(NULL);
 

@@ -20,7 +20,7 @@ import os.path
 params = dotdict.dotdict({
 	'temperature_threshold': 12,
 	'game_generation_batch_size': 10, # how many games to generate before we save a file
-	'train_game_size': 500, # how many games before we train a new network
+	'train_game_size': 0, # how many games before we train a new network
 	'duel_game_count': 40,
 	'gating_threshold': 0.51,
 	'play_batch_size': 100,
@@ -337,8 +337,8 @@ class TrainingManager():
 
 				counter += 1
 
-				if (counter % 1000 == 0):
-					print("training example " + str(training_input) + " output " + str(training_policy_output) + " value " + str(training_value_output))
+				if counter % 10000 == 0:
+					#print("training example " + str(training_input) + " output " + str(training_policy_output) + " value " + str(training_value_output))
 					print("at " + str(counter))
 
 

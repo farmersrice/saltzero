@@ -32,7 +32,10 @@ For a speed reference: more than 2500 games an hour can be played on an i7-8550U
     - Since batched queries to the neural network are often much faster than individual queries, both on CPU and GPU, multiple games are run in a pseudo-parallel fashion. In short, N games (in the code, N = 1000) are simultaneously played. Whenever a new visit in the game tree needs to occur, all games are queried for the positions to be evaluated and these are sent to the neural network in a batch. This provides a huge speed advantage. 
 
 # Usage
-Compile `whole_pipeline.cpp` and run it to train the network. 
+
+Compile `compare_networks.cpp`, `generate_games.cpp`, and `whole_pipeline.cpp` and run `whole_pipeline.cpp` to train the network. 
+
+Note that you will need to produce executables with the proper names (same as the `.cpp` file names) for the program to work properly. This is because we use `system` calls in C++ to executables in order to dispose of GPU memory properly (Keras/TensorFlow don't allow us to do this in a nice manner, see comments in `whole_pipeline.cpp` for more details).
 
 Run `HumanVsRobotTest.py` in order to play against the neural network. In this setting the bot always plays the best move. Currently, playing as the second player is unsupported (you always make the first move). Your move must be an integer from 0 to 80, inclusive. Integers corresponding to board positions can be seen in the diagram below: 
 
@@ -47,6 +50,9 @@ Run `HumanVsRobotTest.py` in order to play against the neural network. In this s
 		[57., 58., 59., 66., 67., 68., 75., 76., 77.],
 		[60., 61., 62., 69., 70., 71., 78., 79., 80.]
 
+## Compatibility notes
+
+If you use an operating system other than Windows, you will have to change a few strings in `whole_pipeline.cpp` to make the appropriate `system` calls. If you use a system that does not use little-endian or is not 64 bit, you may have to play around with `NetworkWrapper.cpp` and `network_wrapper.py` (but it also might work out of the box; this is untested).
 
 # Differences
 
