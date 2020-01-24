@@ -21,5 +21,17 @@ Learning rate was manually lowered once again to 0.0001.
 Then the 21st model after that was renamed to 0th again.
 
 
-New network created: using 8 shared blocks of mlp resnet, 1024 neurons, learning rate 0.01 to start.
+New network created: using 7 shared blocks of mlp resnet, 1024 neurons, learning rate 0.01 to start.
 also lowered the loss weight of the value head to 0.1 to reduce overfitting, since we're using all training data.
+
+
+19th network of resnet surpassed the old best network (which used 6 shared blocks of 512 neurons each).
+
+
+43rd was last strongest net, some reason 44th lost 250:150.	
+
+After training overnight, 57th network lost to the 43rd network (179:221 and another round 176:224, pretty big).
+
+59th network is clone of 43rd network with lowered learning rate to 0.003.
+
+63rd new model was renamed to 0th model again.

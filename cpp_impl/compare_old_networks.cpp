@@ -30,7 +30,11 @@ int main() {
 
 	TrainingManager t;
 
-	auto result = t.compareTwoNetworks(0);
+	auto result = t.compareTwoNetworks(43, 0);
 
-	cout << " best " << result.first << " old " << result.second << endl;
+	cout << " best " << result.first.first << " old " << result.first.second << endl;
+	cout << "draws " << result.second << endl;
+	//result = t.compareTwoNetworks(19);
+
+	//cout << "best " << result.first << " newer old " << result.second << endl;
 }

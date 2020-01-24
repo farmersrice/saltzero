@@ -14,6 +14,10 @@ from SaltZeroAgent import SaltZeroAgent
 
 import tensorflow as tf
 
+conf = tf.compat.v1.ConfigProto()
+conf.gpu_options.per_process_gpu_memory_fraction=0.6
+session = tf.compat.v1.Session(config=conf)
+
 tf.compat.v1.disable_eager_execution()
 
 temp_manager = TrainingManager()

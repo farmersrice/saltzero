@@ -9,7 +9,7 @@ import time
 import sys
 from DuelManager import DuelManager
 from mem_top import mem_top
-
+import numpy as np
 
 
 
@@ -319,7 +319,62 @@ class TrainingManager():
 	def parse_cpp_file(self, file):
 		answer = [[], [], []]
 
-		with open (file, "r") as f:
+		with open (file, "rb") as f:
+			counter = 0
+
+			data = f.read().split()
+
+			#print("first few entries of data are " + str(data[:83]))
+
+			for i in range(len(data) // 83):
+				training_input = bytearray(data[i * 83])
+				for j in range(189):
+					training_input[j] -= 48
+
+				training_policy_output = np.array(data[i * 83 + 1 : i * 83 + 82]).astype(np.float)
+
+				#training_policy_output = [float(split_example[i + 1]) for i in range(81)]
+				training_value_output = float(data[i * 83 + 82])
+
+				answer[0].append(training_input)
+				answer[1].append(training_policy_output)
+				answer[2].append(training_value_output)
+
+
+				counter += 1
+
+				if counter % 10000 == 0:
+					#print("training example " + str(training_input) + " output " + str(training_policy_output) + " value " + str(training_value_output))
+					print("at " + str(counter))
+
+			'''	
+			for line in f:
+
+				split_example = line.split(b' ')
+
+				#training_input = np.asarray([split_example[0][i] - 48 for i in range(189)])
+				training_input = bytearray(split_example[0])
+				for i in range(189):
+					training_input[i] -= 48
+
+				training_policy_output = np.array(split_example[1 : 1 + 81]).astype(np.float)
+
+				#training_policy_output = [float(split_example[i + 1]) for i in range(81)]
+				training_value_output = float(split_example[1 + 81])
+
+				answer[0].append(training_input)
+				answer[1].append(training_policy_output)
+				answer[2].append(training_value_output)
+
+				counter += 1
+
+				if counter % 10000 == 0:
+					#print("training example " + str(training_input) + " output " + str(training_policy_output) + " value " + str(training_value_output))
+					print("at " + str(counter))
+			'''
+
+		'''
+		with open (file, "rb") as f:
 			raw_data = f.readlines()
 
 			counter = 0
@@ -340,9 +395,10 @@ class TrainingManager():
 				if counter % 10000 == 0:
 					#print("training example " + str(training_input) + " output " + str(training_policy_output) + " value " + str(training_value_output))
 					print("at " + str(counter))
+		'''
 
 
-		return answer;
+		return answer
 
 
 	def load_training_data(self):

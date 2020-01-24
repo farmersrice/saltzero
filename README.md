@@ -9,7 +9,11 @@ For the general idea of the mechanism behind the bot, read the original paper, [
 
 The goal is to produce a strong bot with easily understandable code – balancing speed with readability. There are a variety of other implementations of the AlphaGo Zero / AlphaZero idea online for a wide range of games. Other implementations usually fall into two categories: targeting either education and readability or pure speed. In the first case, implementations are often written in pure Python, and as a result are incredibly slow and unusable. In the second case, implementations are extremely large and convoluted and are difficult to understand. This implementation aims to strike a balance, although it focuses more on the readability side than the optimization side.
 
-For a speed reference: more than 2500 games an hour can be played on an i7-8550U at 200 visits per move, using a network with 6 shared hidden dense layers of 512 nodes each. Please note that the current "whole_pipeline.cpp" is single-threaded and therefore is closer to 1800 games an hour.
+For a speed reference: more than 2500 games an hour can be played on an i7-8550U at 200 visits per move, using a network with 6 shared hidden dense layers of 512 neurons each. Around 10000 games an hour can be generated on a Ryzen 7 3700X / RTX 2070 Super combination using a network with 7 shared hidden residual blocks (each block contains two dense layers of 1024 neurons each). Currently, the network architecture prevents full GPU utilization, but this is expected to be remedied when bigger networks are used.
+
+Here's a strength graph (note that network number 0 is our reference network, which was trained before switching to resnet, so there is a sudden drop and ascension; network 1 is the first residual network).
+
+![Strength graph](https://i.imgur.com/d0tFurd.png "Strength graph")
 
 # Features
 
@@ -17,13 +21,15 @@ For a speed reference: more than 2500 games an hour can be played on an i7-8550U
 
 - Additional Python implementation for readability
 
+	- C++ implementation is to be considered the most up-to-date; Python implementation may be a few updates behind.
+
 - Machine learning is all conducted in Python and interfaces to C++ through the Python C API
 
     - Allows for neural networks and other machine learning models to be coded in Python while still putting the grunt work of game processing on C++. In the Python implementation, Python's slowness is the main bottleneck (ML takes < 1% of time spent), while in the C++ implementation, the neural network and Python/C++ communication are the main bottlenecks.
 
     - This C++/Python hybrid system is > 15 times faster than the pure Python implementation.
 
-- Moderately strong pre-trained network (although not yet superhuman)
+- Incredibly strong pre-trained network (potentially superhuman) available
 
 - Automatic deletion of games to save space (every 1000 games takes 200 mb)
 
@@ -32,6 +38,8 @@ For a speed reference: more than 2500 games an hour can be played on an i7-8550U
     - Since batched queries to the neural network are often much faster than individual queries, both on CPU and GPU, multiple games are run in a pseudo-parallel fashion. In short, N games (in the code, N = 1000) are simultaneously played. Whenever a new visit in the game tree needs to occur, all games are queried for the positions to be evaluated and these are sent to the neural network in a batch. This provides a huge speed advantage. 
 
 # Usage
+
+Download from the [releases section](https://github.com/farmersrice/saltzero/releases) in order to get the weight file.
 
 Compile `compare_networks.cpp`, `generate_games.cpp`, and `whole_pipeline.cpp` and run `whole_pipeline.cpp` to train the network. 
 
@@ -54,6 +62,8 @@ Run `HumanVsRobotTest.py` in order to play against the neural network. In this s
 
 If you use an operating system other than Windows, you will have to change a few strings in `whole_pipeline.cpp` to make the appropriate `system` calls. If you use a system that does not use little-endian or is not 64 bit, you may have to play around with `NetworkWrapper.cpp` and `network_wrapper.py` (but it also might work out of the box; this is untested).
 
+You will need to use GCC in order to compile, since `__gnu_pbds` is used for its faster hash table.
+
 # Differences
 
 This section lists some differences between this implementation and the original paper, as well as other implementations online. For anything not mentioned here, you can generally assume that the implementation follows the original paper.
@@ -72,6 +82,8 @@ This section lists some differences between this implementation and the original
 
 # Other notes
 
-I lost once to the neural network, but since then I have beaten it in every game despite its increased training. Every time I beat the network I tested the strongest net against older nets in order to verify its strength, and it held up and beat them all. The network probably hasn't been trained for long enough to gain strength yet. 
+The latest network is potentially superhuman strength. In the past I easily beat the non-residual network; after less than a day of training the residual network beat me twice. On average, I spent around 15 seconds per move thinking, sometimes spiking up to a few minutes per move. A few networks later, it beat a friend of mine. In all cases the network went second. The neural network currently thinks that the first player has a major advantage (value head outputs around 0.2), so its wins at a disadvantaged position are surprising. Less than a second of computing time on the CPU, in pure Python, was used per turn.
+
+The network understands high-level concepts, such as the idea that the optimal move might not be the one that wins the local board. From my handful of games against it, I can say that the network is extremely effective at trapping its opponent in positions where it seems that almost any move will send the bot to a won square and thus allow it to play anywhere. 
 
 There are a variety of ad-hoc changes I've made to the learning rate and the networks; there's a small text-only readme in the models folder detailing these changes.

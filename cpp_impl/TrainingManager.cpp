@@ -15,13 +15,7 @@ TrainingManager::TrainingManager() {
 	net.loadBestNetwork(0);
 }
 
-pair<vector<tuple<vector<float>, vector<float>, int>>, pair<double, double>> TrainingManager::playGames(int numGames, bool isTraining, int flip) {
-
-	if (storedBest != net.getBestNetwork()) { 
-		//Always use the best net
-		storedBest = net.getBestNetwork();
-		net.loadBestNetwork(0);
-	}
+pair<vector<tuple<vector<float>, vector<float>, int>>, pair<pair<double, double>, int>> TrainingManager::playGames(int numGames, bool isTraining, int flip) {
 
 	vector<UtttBoard> boards(numGames, UtttBoard());
 
@@ -40,6 +34,7 @@ pair<vector<tuple<vector<float>, vector<float>, int>>, pair<double, double>> Tra
 
 	double result0 = 0;
 	double result1 = 0;
+	int draws = 0;
 
 	while (unfinishedGames) {
 		auto start = clock();
@@ -131,6 +126,7 @@ pair<vector<tuple<vector<float>, vector<float>, int>>, pair<double, double>> Tra
 				if (boards[i].getWinResult() == 0) {
 					result0 += 0.5;
 					result1 += 0.5;
+					draws++;
 				} else if (boards[i].getWinResult() == 1) {
 					result0 += 1;
 				} else {
@@ -166,7 +162,7 @@ pair<vector<tuple<vector<float>, vector<float>, int>>, pair<double, double>> Tra
 		}
 	}
 
-	return make_pair(trainingDataAnswer, make_pair(result0, result1));
+	return make_pair(trainingDataAnswer, make_pair(make_pair(result0, result1), draws));
 }
 
 //if you want to use this in other OSes, you will have to write it yourself
@@ -207,20 +203,24 @@ void TrainingManager::saveData(vector<tuple<vector<float>, vector<float>, int>> 
 	dataStream.close();
 }
 
-pair<double, double> TrainingManager::compareTwoNetworks(int other) { // for now only take best
-	cout << "comparing best to " << other << endl;
-	net.loadNetwork(other, 1);
-	auto resultBestFirst = playGames(DUEL_GAME_COUNT / 2, false, 0);
-	cout << "best first got " << resultBestFirst.second.first << ' ' << resultBestFirst.second.second << endl;
-	auto resultLatestFirst = playGames(DUEL_GAME_COUNT / 2, false, 1);
-	cout << "latest first got " << resultLatestFirst.second.first << ' ' << resultLatestFirst.second.second << endl;
+pair<pair<double, double>, int> TrainingManager::compareTwoNetworks(int firstPlayer, int secondPlayer) {
+	cout << "comparing " << firstPlayer << " to " << secondPlayer << endl;
+	net.loadNetwork(firstPlayer, 0);
+	net.loadNetwork(secondPlayer, 1);
+	auto resultBestFirst = playGames(DUEL_GAME_COUNT / 2, false, 0).second;
+	cout << "first first got " << resultBestFirst.first.first << ' ' << resultBestFirst.first.second << endl;
+	auto resultLatestFirst = playGames(DUEL_GAME_COUNT / 2, false, 1).second;
+	cout << "second first got " << resultLatestFirst.first.first << ' ' << resultLatestFirst.first.second << endl;
 
-	double res0 = resultBestFirst.second.first + resultLatestFirst.second.second;
-	double res1 = resultBestFirst.second.second + resultLatestFirst.second.first;
+	double res0 = resultBestFirst.first.first + resultLatestFirst.first.second;
+	double res1 = resultBestFirst.first.second + resultLatestFirst.first.first;
 
 	cout << "score is " << res0 << " to " << res1 << " old to new " << endl;
 
-	return make_pair(res0, res1);
+	int draws = resultBestFirst.second + resultLatestFirst.second;
+	cout << "total draws " << draws << endl;
+
+	return make_pair(make_pair(res0, res1), draws);
 }
 
 void TrainingManager::compareBestToLatest() {
@@ -228,17 +228,7 @@ void TrainingManager::compareBestToLatest() {
 	cout << "Comparing best to latest, best and latest are " << storedBest << " " << curLatest << endl;
 	//net.loadLatestNetwork(1);
 
-	auto result = compareTwoNetworks(curLatest);
-	/*
-	auto resultBestFirst = playGames(DUEL_GAME_COUNT / 2, false, 0);
-	cout << "best first got " << resultBestFirst.second.first << ' ' << resultBestFirst.second.second << endl;
-	auto resultLatestFirst = playGames(DUEL_GAME_COUNT / 2, false, 1);
-	cout << "latest first got " << resultLatestFirst.second.first << ' ' << resultLatestFirst.second.second << endl;
-
-	double res0 = resultBestFirst.second.first + resultLatestFirst.second.second;
-	double res1 = resultBestFirst.second.second + resultLatestFirst.second.first;
-
-	cout << "score is " << res0 << " to " << res1 << " old to new " << endl;*/
+	auto result = compareTwoNetworks(storedBest, curLatest).first;
 
 	double res0 = result.first;
 	double res1 = result.second;

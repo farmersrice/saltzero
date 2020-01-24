@@ -5,6 +5,10 @@ import gc
 import struct
 from mem_top import mem_top
 
+conf = tf.compat.v1.ConfigProto()
+conf.gpu_options.per_process_gpu_memory_fraction=0.6
+session = tf.compat.v1.Session(config=conf)
+
 # Unfortunately tensorflow doesn't allow us to release the used gpu memory in an easy fashion, so we have to create a separate executable
 
 

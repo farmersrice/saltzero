@@ -1,6 +1,14 @@
+import os
+os.environ['CUDA_VISIBLE_DEVICES'] = '-1' # no gpu.
+
+import tensorflow as tf
+tf.compat.v1.disable_eager_execution()
+
+
 from SaltZeroAgent import SaltZeroAgent
 from UtttBoard import UtttBoard
 from TrainingManager import TrainingManager
+
 
 print("hi")
 board = UtttBoard()

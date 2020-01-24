@@ -22,10 +22,6 @@ typedef pair<int, pair<int, pair<int, int> > > pair4;
 const int THREADS = 4;
 
 int main() {
-	if (fopen("FILENAME.in", "r")) {
-		freopen("FILENAME.in", "r", stdin);
-		freopen("FILENAME.out", "w", stdout);
-	}
 	ios_base::sync_with_stdio(false); 
 	cin.tie(NULL);
 
