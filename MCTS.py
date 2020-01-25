@@ -5,7 +5,7 @@ import dotdict
 import time
 
 params = dotdict.dotdict({
-	'visits': 200,
+	'visits': 400,
 	'c_puct': 1.1, # from katago
 	'alpha': 0.3, # dirichlet noise parameter, set to 0.3 since that's what was used for chess,
 	# since we can assume ~10 random plays in every game or so similar to chess

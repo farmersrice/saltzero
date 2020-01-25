@@ -29,7 +29,7 @@ int main() {
 
 	//multithreaded game generation
 
-	vector<future<pair<vector<tuple<vector<float>, vector<float>, int>>, pair<double, double>>>> items;
+	vector<future<pair<vector<tuple<vector<float>, vector<float>, int>>, pair<pair<double, double>, int>>>> items;
 
 	cout << "beginning generation" << endl;
 

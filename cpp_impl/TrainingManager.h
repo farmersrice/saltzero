@@ -8,6 +8,7 @@ const int TEMPERATURE_THRESHOLD = 12;
 const int DUEL_TEMPERATURE_THRESHOLD = 4;
 const int TRAIN_GAME_SIZE = 500; //at least 500 games before training new net
 const int DUEL_GAME_COUNT = 400; //how many games we use for gating
+const int GATING_THRESHOLD = 210;
 const int PLAY_BATCH_SIZE = 1000;
 
 

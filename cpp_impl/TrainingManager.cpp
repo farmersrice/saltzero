@@ -228,14 +228,18 @@ void TrainingManager::compareBestToLatest() {
 	cout << "Comparing best to latest, best and latest are " << storedBest << " " << curLatest << endl;
 	//net.loadLatestNetwork(1);
 
-	auto result = compareTwoNetworks(storedBest, curLatest).first;
+	auto result = compareTwoNetworks(storedBest, curLatest);
 
-	double res0 = result.first;
-	double res1 = result.second;
+	double res0 = result.first.first;
+	double res1 = result.first.second;
+	int draws = result.second;
 
-	if (res1 > res0) {
-		//50% gating
+	ofstream resultStream;
+	resultStream.open("selfplay_results.txt", ios::out | ios::app);
+	resultStream << storedBest << ' ' << curLatest << " score is " << res0 << " to " << res1 << " draws " << draws << endl;
+	resultStream.close();
 
+	if (res1 >= GATING_THRESHOLD) {
 		cout << curLatest << " Passed! writing to file" << endl;
 
 		ofstream dataStream;

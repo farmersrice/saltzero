@@ -35,3 +35,115 @@ After training overnight, 57th network lost to the 43rd network (179:221 and ano
 59th network is clone of 43rd network with lowered learning rate to 0.003.
 
 63rd new model was renamed to 0th model again.
+
+For some reason the network got weaker; 17th model was about equal to the new 0th model. Must have forgotten something along the way.
+
+Some tests by hand:
+
+17 to 0:
+ best 200 old 200
+draws 76
+
+12 to 0:
+ best 217.5 old 182.5
+draws 81
+
+12 to 8:
+ best 174 old 226
+draws 86
+
+8 to 10:
+ best 182.5 old 217.5
+draws 97
+
+10 to 11:
+ best 191 old 209
+draws 88
+
+11 to 12:
+ best 201 old 199
+draws 92
+
+11 to 8:
+ best 208.5 old 191.5
+draws 85
+
+11 to 5:
+ best 205 old 195
+draws 88
+
+10 to 5:
+ best 205 old 195
+draws 82
+
+10 to 12:
+ best 181.5 old 218.5
+draws 129
+
+12 to 8:
+ best 194 old 206
+draws 92
+
+11 to 14:
+ best 200 old 200
+draws 94
+
+11 to 0:
+ best 185.5 old 214.5
+draws 83
+
+11 to 0:
+ best 196 old 204
+draws 78
+
+12 to 0:
+ best 223.5 old 176.5
+draws 101
+
+8 to 0:
+ best 220 old 180
+draws 96
+
+17 to 0:
+ best 208.5 old 191.5
+draws 101
+
+8 to 10:
+ best 214 old 186
+draws 104
+
+10 to 0:
+ best 198 old 202
+draws 92
+
+8 to 1:
+ best 200.5 old 199.5
+draws 107
+
+8 to 3:
+ best 224 old 176
+draws 92
+
+Result:
+Rank Name   Elo    +    - games score oppo. draws
+   1 p8      10   13   13  2400   52%     0   23%
+   2 p12      7   12   12  2400   51%     1   24%
+   3 p14      0   31   31   400   50%     0   24%
+   4 p11      0   12   12  2800   50%    -1   22%
+   5 p17      0   22   22   800   51%    -6   22%
+   6 p10     -3   12   12  2400   49%     2   25%
+   7 p0      -6   11   11  3200   48%     3   22%
+   8 p5      -8   22   22   800   49%    -1   21%
+
+Renaming 8th model to the best and trying again, lowered learning rate to 0.001.
+
+Increased gating threshold to 210/400.
+
+Rank Name   Elo    +    - games score oppo. draws
+   1 p13     25   14   14  2000   55%    -3   24%
+   2 p8      16   11   11  2800   53%     0   29%
+   3 p9      10   13   13  2000   48%    20   29%
+   4 p4      -2   15   15  1600   49%     2   26%
+   5 p0     -49   18   18  1200   39%    13   21%
+
+Renamed 13th model to 0th model for release purposes.
