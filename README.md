@@ -68,11 +68,7 @@ You will need to use GCC in order to compile, since `__gnu_pbds` is used for its
 
 This section lists some differences between this implementation and the original paper, as well as other implementations online. For anything not mentioned here, you can generally assume that the implementation follows the original paper.
 
-- Rotations are added to training data, but random rotations are not used in the Monte Carlo Tree Search
-
-- Rotations are not used in evaluator games; instead, temperature is turned on for the first 4 moves
-
-- Evaluator uses > 50% gating at 200 games; in other words, a new net must win more than 100 out of 200 games against an old net to pass
+- Evaluator uses > 52.5% gating at 400 games; in other words, a new net must win at least 210 out of 400 games against an old net to pass
 
 - Uses Dirichlet noise as in the original paper, but this time with alpha = 0.3 to compensate for fewer possible moves (this is seen to be optimal based on the AlphaZero paper)
 

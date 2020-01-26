@@ -45,7 +45,7 @@ int main() {
 		// With gpu, 14.75 seconds for new network, similar for old.
 
 
-		items.pb(async([&t]{ return t.playGames(); }));
+		items.pb(async([&t]{ return t.playGames(PLAY_BATCH_SIZE, true, 0); }));
 	}
 
 	for (int i = 0; i < THREADS; i++) {

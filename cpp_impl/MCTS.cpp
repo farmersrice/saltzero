@@ -8,8 +8,8 @@ using namespace std;
 
 typedef long long ll;
 
-const ll RANDOM = chrono::high_resolution_clock::now().time_since_epoch().count();
 
+const long long RANDOM = std::chrono::high_resolution_clock::now().time_since_epoch().count();
 mt19937 rng(RANDOM);
 
 vector<double> dirichlet(int length) {

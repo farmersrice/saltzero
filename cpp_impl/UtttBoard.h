@@ -3,6 +3,12 @@
 #include <vector>
 #include <string>
 
+template<typename T> 
+std::vector<T> rotateMatrix90(std::vector<T> &board);
+
+template<typename T>
+std::vector<T> reflectMatrix(std::vector<T> &board);
+
 struct UtttBoard {
 	bool miniGetGameEnded(int miniBoard);
 	int miniGetWinResult(int miniBoard);

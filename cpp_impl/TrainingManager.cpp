@@ -7,6 +7,9 @@
 #include <Windows.h>
 #include <fstream>
 #include <iomanip>
+#include <random>
+#include <chrono>
+#include <map>
 
 using namespace std;
 
@@ -41,6 +44,8 @@ pair<vector<tuple<vector<float>, vector<float>, int>>, pair<pair<double, double>
 
 		for (int asdf = 0; asdf < VISITS; asdf++) {
 			batchedQueries.clear();
+			vector<UtttBoard> queryBoards;
+
 			for (int i = 0; i < numGames; i++) {
 				noInput[i] = false;
 			}
@@ -62,8 +67,35 @@ pair<vector<tuple<vector<float>, vector<float>, int>>, pair<pair<double, double>
 				} else {
 					//cout << "adding board to query " << endl;
 					//cout << query.toString() << endl;
-					batchedQueries.push_back(query.toNetInputVector());
+					//batchedQueries.push_back(query.toNetInputVector());
+					queryBoards.push_back(query);
 				}
+			}
+
+			vector<pair<int, int>> rotationHistory(queryBoards.size());
+
+			uniform_int_distribution<int> dis(0, 3);
+
+			//Perform random rotations	
+
+			for (int i = 0; i < queryBoards.size(); i++) {
+				rotationHistory[i] = make_pair(dis(rng) % 2, dis(rng));
+				//cout << "rotation pair " << rotationHistory[i].first << ' ' << rotationHistory[i].second << endl;
+			}
+
+			for (int i = 0; i < queryBoards.size(); i++) {
+				if (rotationHistory[i].first) {
+					//Flip it
+					queryBoards[i].reflect();
+				}
+
+				for (int j = 0; j < rotationHistory[i].second; j++) {
+					queryBoards[i].rotate90();
+				}
+			}
+
+			for (int i = 0; i < queryBoards.size(); i++) {
+				batchedQueries.push_back(queryBoards[i].toNetInputVector());
 			}
 
 			if (batchedQueries.size() > 0) {
@@ -72,6 +104,21 @@ pair<vector<tuple<vector<float>, vector<float>, int>>, pair<pair<double, double>
 				results = net.predict(batchedQueries, (isTraining ? 0 : (moveCounter % 2 == flip ? 0 : 1)));
 				//cout << "predict time " << (clock() - s1) / (1.0 * CLOCKS_PER_SEC ) << endl;
 			}
+
+			//Unrotate the results
+
+			for (int i = 0; i < queryBoards.size(); i++) {
+				if (rotationHistory[i].second > 0) {
+					for (int j = 0; j < 4 - rotationHistory[i].second; j++) {
+						results[i].first = rotateMatrix90<float>(results[i].first);
+					}
+				}
+
+				if (rotationHistory[i].first) {
+					results[i].first = reflectMatrix<float>(results[i].first);
+				}
+			}
+			
 
 
 			int counter = 0;
@@ -95,6 +142,8 @@ pair<vector<tuple<vector<float>, vector<float>, int>>, pair<pair<double, double>
 			}
 		}
 
+		//set<vector<float>> duplicateChecker; 
+		
 		for (int i = 0; i < numGames; i++) {
 			UtttBoard board = boards[i];
 
@@ -132,6 +181,20 @@ pair<vector<tuple<vector<float>, vector<float>, int>>, pair<pair<double, double>
 				} else {
 					result1 += 1;
 				}
+
+				/*
+				for (auto it : symmetries) {
+					auto finalBoardState = it.first;
+
+					if (duplicateChecker.find(finalBoardState) != duplicateChecker.end()) {
+						cout << "Duplicate found" << endl;
+					}
+				}
+
+				for (auto it : symmetries) {
+					auto finalBoardState = it.first;
+					duplicateChecker.insert(finalBoardState);
+				}*/
 			}
 		}
 

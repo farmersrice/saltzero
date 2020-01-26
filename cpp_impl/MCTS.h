@@ -3,6 +3,7 @@
 
 
 #include <vector>
+#include <random>
 
 #include "UtttBoard.h"
 
@@ -12,6 +13,8 @@ const double C_PUCT = 1.1;
 const double ALPHA = 0.3;
 const double EPS = 0.25;
 
+
+extern std::mt19937 rng;
 
 struct MCTS {
 

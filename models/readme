@@ -147,3 +147,5 @@ Rank Name   Elo    +    - games score oppo. draws
    5 p0     -49   18   18  1200   39%    13   21%
 
 Renamed 13th model to 0th model for release purposes.
+
+Trained another 20 nets but none were stronger than the 0th. Lowering learning rate yet again.
