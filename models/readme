@@ -148,4 +148,18 @@ Rank Name   Elo    +    - games score oppo. draws
 
 Renamed 13th model to 0th model for release purposes.
 
-Trained another 20 nets but none were stronger than the 0th. Lowering learning rate yet again.
+Trained another 20 nets but none were stronger than the 0th. Lowering learning rate yet again to 0.0003.
+
+Trained 18 more nets; result:
+
+Rank Name   Elo    +    - games score oppo. draws
+   1 p13     30   14   14  2000   57%    -9   26%
+   2 p11     19   17   17  1200   53%     5   30%
+   3 p7      17   15   15  1590   53%     1   34%
+   4 p6     -13   15   15  1590   48%    -2   32%
+   5 p5     -20   17   17  1200   51%   -26   33%
+   6 p0     -33   11   11  2800   43%     6   27%
+
+(Mistyped the p6 vs p7 duel by 10 games, but it doesn't really matter)
+
+Renamed 13th model to 0th again, lowered learning rate to 0.0001.
