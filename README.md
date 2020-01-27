@@ -1,11 +1,11 @@
 SaltZero
 =======
 
-Machine learning bot for ultimate tic-tac-toe based on DeepMind's AlphaGo Zero paper. No human knowledge provided.
+Machine learning bot for ultimate tic-tac-toe based on DeepMind's AlphaGo Zero / AlphaZero papers. No human knowledge provided.
 
 Ultimate tic-tac-toe is a game involving a 3 by 3 grid, each cell of which is itself a regular tic-tac-toe game, for a total board size of 9 by 9. Read the [Wikipedia page](https://en.wikipedia.org/wiki/Ultimate_tic-tac-toe) for a concise summary of the rules of the game.
 
-For the general idea of the mechanism behind the bot, read the original paper, [Mastering the Game of Go without Human Knowledge](https://discovery.ucl.ac.uk/id/eprint/10045895/1/agz_unformatted_nature.pdf).
+For the general idea of the mechanism behind the bot, read the original paper, [Mastering the Game of Go without Human Knowledge](https://discovery.ucl.ac.uk/id/eprint/10045895/1/agz_unformatted_nature.pdf). Please note that some additional ideas are also taken from the AlphaZero paper, [Mastering Chess and Shogi by Self-Play with a General Reinforcement Learning Algorithm](https://arxiv.org/pdf/1712.01815.pdf). 
 
 The goal is to produce a strong bot with easily understandable code – balancing speed with readability. There are a variety of other implementations of the AlphaGo Zero / AlphaZero idea online for a wide range of games. Other implementations usually fall into two categories: targeting either education and readability or pure speed. In the first case, implementations are often written in pure Python, and as a result are incredibly slow and unusable. In the second case, implementations are extremely large and convoluted and are difficult to understand. This implementation aims to strike a balance, although it focuses more on the readability side than the optimization side.
 
@@ -37,13 +37,11 @@ Here's a strength graph (note that network number 0 is our reference network, wh
 
     - Since batched queries to the neural network are often much faster than individual queries, both on CPU and GPU, multiple games are run in a pseudo-parallel fashion. In short, N games (in the code, N = 1000) are simultaneously played. Whenever a new visit in the game tree needs to occur, all games are queried for the positions to be evaluated and these are sent to the neural network in a batch. This provides a huge speed advantage. 
 
+- Easy to adapt to new games 
+
 # Usage
 
 Download from the [releases section](https://github.com/farmersrice/saltzero/releases) in order to get the weight file.
-
-Compile `compare_networks.cpp`, `generate_games.cpp`, and `whole_pipeline.cpp` and run `whole_pipeline.cpp` to train the network. 
-
-Note that you will need to produce executables with the proper names (same as the `.cpp` file names) for the program to work properly. This is because we use `system` calls in C++ to executables in order to dispose of GPU memory properly (Keras/TensorFlow don't allow us to do this in a nice manner, see comments in `whole_pipeline.cpp` for more details).
 
 Run `HumanVsRobotTest.py` in order to play against the neural network. In this setting the bot always plays the best move. Currently, playing as the second player is unsupported (you always make the first move). Your move must be an integer from 0 to 80, inclusive. Integers corresponding to board positions can be seen in the diagram below: 
 
@@ -57,6 +55,12 @@ Run `HumanVsRobotTest.py` in order to play against the neural network. In this s
 		[54., 55., 56., 63., 64., 65., 72., 73., 74.],
 		[57., 58., 59., 66., 67., 68., 75., 76., 77.],
 		[60., 61., 62., 69., 70., 71., 78., 79., 80.]
+
+
+For selfplay/training: Compile `compare_networks.cpp`, `generate_games.cpp`, and `whole_pipeline.cpp` and run `whole_pipeline.cpp`.
+
+Note that you will need to produce executables with the proper names (same as the `.cpp` file names) for the program to work properly. This is because we use `system` calls in C++ to executables in order to dispose of GPU memory properly (Keras/TensorFlow don't allow us to do this in a nice manner, see comments in `whole_pipeline.cpp` for more details).
+
 
 ## Compatibility notes
 
