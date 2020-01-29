@@ -5,6 +5,7 @@
 
 const int TEMPERATURE_THRESHOLD = 12;
 const int DUEL_TEMPERATURE_THRESHOLD = 0; //Strong as we can for duel/gating games, randomness is introduced thru rotations
+const bool FIRST_TURN_TEMP = true;
 const int TRAIN_GAME_SIZE = 500; //at least 500 games before training new net
 const int DUEL_GAME_COUNT = 400; //how many games we use for gating
 const int GATING_THRESHOLD = 210;

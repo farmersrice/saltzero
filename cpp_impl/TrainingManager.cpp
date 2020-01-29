@@ -142,7 +142,8 @@ pair<vector<tuple<vector<float>, vector<float>, int>>, pair<pair<double, double>
 			}
 		}
 
-		//set<vector<float>> duplicateChecker; 
+		set<vector<float>> duplicateChecker; 
+		int duplicates = 0;
 		
 		for (int i = 0; i < numGames; i++) {
 			UtttBoard board = boards[i];
@@ -153,7 +154,7 @@ pair<vector<tuple<vector<float>, vector<float>, int>>, pair<pair<double, double>
 
 			MCTS &item = (isTraining ? mctsItems[i] : (moveCounter % 2 == 0 ? mctsItems[i] : mctsDuelItems[i]));
 
-			pair<vector<float>, int> piAndMove = item.getProbabilitiesAndBestMove(board, ((isTraining && moveCounter < TEMPERATURE_THRESHOLD) || moveCounter < DUEL_TEMPERATURE_THRESHOLD) ? 1 : 0);
+			pair<vector<float>, int> piAndMove = item.getProbabilitiesAndBestMove(board, ((isTraining && moveCounter < TEMPERATURE_THRESHOLD) || moveCounter < DUEL_TEMPERATURE_THRESHOLD || (moveCounter == 1 && FIRST_TURN_TEMP)) ? 1 : 0);
 
 			auto symmetries = board.getSymmetries(piAndMove.first);
 
@@ -182,23 +183,25 @@ pair<vector<tuple<vector<float>, vector<float>, int>>, pair<pair<double, double>
 					result1 += 1;
 				}
 
-				/*
+				
 				for (auto it : symmetries) {
 					auto finalBoardState = it.first;
 
 					if (duplicateChecker.find(finalBoardState) != duplicateChecker.end()) {
-						cout << "Duplicate found" << endl;
+						duplicates++;
 					}
 				}
 
 				for (auto it : symmetries) {
 					auto finalBoardState = it.first;
 					duplicateChecker.insert(finalBoardState);
-				}*/
+				}
 			}
 		}
 
 		cout << "finished move " << moveCounter << " in time " << (clock() - start) / (1.0 * CLOCKS_PER_SEC) << endl;
+
+		if (duplicates != 0) cout << "Duplicates: " << duplicates/8 << endl;
 		moveCounter++;
 	}
 
