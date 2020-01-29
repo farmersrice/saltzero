@@ -5,6 +5,26 @@ Machine learning bot for ultimate tic-tac-toe based on DeepMind's AlphaGo Zero /
 
 Ultimate tic-tac-toe is a game involving a 3 by 3 grid, each cell of which is itself a regular tic-tac-toe game, for a total board size of 9 by 9. Read the [Wikipedia page](https://en.wikipedia.org/wiki/Ultimate_tic-tac-toe) for a concise summary of the rules of the game.
 
+# I want to play right now
+
+Download from the [releases section](https://github.com/farmersrice/saltzero/releases) in order to get the weight file.
+
+Run `HumanVsRobotTest.py` in order to play against the neural network. In this setting the bot always plays the best move. Your move must be an integer from 0 to 80, inclusive. Integers corresponding to board positions can be seen in the diagram below: 
+
+
+		[ 0.,  1.,  2.,  9., 10., 11., 18., 19., 20.],
+		[ 3.,  4.,  5., 12., 13., 14., 21., 22., 23.],
+		[ 6.,  7.,  8., 15., 16., 17., 24., 25., 26.],
+		[27., 28., 29., 36., 37., 38., 45., 46., 47.],
+		[30., 31., 32., 39., 40., 41., 48., 49., 50.],
+		[33., 34., 35., 42., 43., 44., 51., 52., 53.],
+		[54., 55., 56., 63., 64., 65., 72., 73., 74.],
+		[57., 58., 59., 66., 67., 68., 75., 76., 77.],
+		[60., 61., 62., 69., 70., 71., 78., 79., 80.]
+
+
+# Description
+
 For the general idea of the mechanism behind the bot, read the original paper, [Mastering the Game of Go without Human Knowledge](https://discovery.ucl.ac.uk/id/eprint/10045895/1/agz_unformatted_nature.pdf). Please note that some additional ideas are also taken from the AlphaZero paper, [Mastering Chess and Shogi by Self-Play with a General Reinforcement Learning Algorithm](https://arxiv.org/pdf/1712.01815.pdf). 
 
 The goal is to produce a strong bot with easily understandable code – balancing speed with readability. There are a variety of other implementations of the AlphaGo Zero / AlphaZero idea online for a wide range of games. Other implementations usually fall into two categories: targeting either education and readability or pure speed. In the first case, implementations are often written in pure Python, and as a result are incredibly slow and unusable. In the second case, implementations are extremely large and convoluted and are difficult to understand. This implementation aims to strike a balance, although it focuses more on the readability side than the optimization side.
@@ -39,25 +59,9 @@ Here's a strength graph (note that network number 0 is our reference network, wh
 
 - Easy to adapt to new games 
 
-# Usage
+# Selfplay/training
 
-Download from the [releases section](https://github.com/farmersrice/saltzero/releases) in order to get the weight file.
-
-Run `HumanVsRobotTest.py` in order to play against the neural network. In this setting the bot always plays the best move. Currently, playing as the second player is unsupported (you always make the first move). Your move must be an integer from 0 to 80, inclusive. Integers corresponding to board positions can be seen in the diagram below: 
-
-
-		[ 0.,  1.,  2.,  9., 10., 11., 18., 19., 20.],
-		[ 3.,  4.,  5., 12., 13., 14., 21., 22., 23.],
-		[ 6.,  7.,  8., 15., 16., 17., 24., 25., 26.],
-		[27., 28., 29., 36., 37., 38., 45., 46., 47.],
-		[30., 31., 32., 39., 40., 41., 48., 49., 50.],
-		[33., 34., 35., 42., 43., 44., 51., 52., 53.],
-		[54., 55., 56., 63., 64., 65., 72., 73., 74.],
-		[57., 58., 59., 66., 67., 68., 75., 76., 77.],
-		[60., 61., 62., 69., 70., 71., 78., 79., 80.]
-
-
-For selfplay/training: Compile `compare_networks.cpp`, `generate_games.cpp`, and `whole_pipeline.cpp` and run `whole_pipeline.cpp`.
+Compile `compare_networks.cpp`, `generate_games.cpp`, and `whole_pipeline.cpp` and run `whole_pipeline.cpp`.
 
 Note that you will need to produce executables with the proper names (same as the `.cpp` file names) for the program to work properly. This is because we use `system` calls in C++ to executables in order to dispose of GPU memory properly (Keras/TensorFlow don't allow us to do this in a nice manner, see comments in `whole_pipeline.cpp` for more details).
 
@@ -66,7 +70,7 @@ Note that you will need to produce executables with the proper names (same as th
 
 If you use an operating system other than Windows, you will have to change a few strings in `whole_pipeline.cpp` to make the appropriate `system` calls. If you use a system that does not use little-endian or is not 64 bit, you may have to play around with `NetworkWrapper.cpp` and `network_wrapper.py` (but it also might work out of the box; this is untested).
 
-You will need to use GCC in order to compile, since `__gnu_pbds` is used for its faster hash table.
+You will need to use GCC in order to compile, since `__gnu_pbds` is used for its faster hash table. You can drop in `unordered_map` or `map` for compatibility with other compilers if you like.
 
 # Differences
 
@@ -80,9 +84,13 @@ This section lists some differences between this implementation and the original
 
     - This is because the game rules clearly delineate the differences between small games and the big game. If a convolution overlaps multiple small games, its data will not be very useful, because cells next to each other are not inherently linked unless they are in the same small board (unlike in go where stones in adjacent cells become unified groups or snuff out liberties). Therefore only densely connected layers are used.
 
+- Train on all positions instead of using a training window due to significantly weaker hardware than in the original paper
+
+- Value head weighted at 0.1 instead of 1 to compensate for training on all positions
+
 # Other notes
 
-The latest network is potentially superhuman strength. In the past I easily beat the non-residual network; after less than a day of training the residual network beat me twice. On average, I spent around 15 seconds per move thinking, sometimes spiking up to a few minutes per move. A few networks later, it beat a friend of mine. In all cases the network went second. The neural network currently thinks that the first player has a major advantage (value head outputs around 0.2), so its wins at a disadvantaged position are surprising. Less than a second of computing time on the CPU, in pure Python, was used per turn.
+The latest network is superhuman strength. If you can beat it without computer assistance, please let me know.
 
 The network understands high-level concepts, such as the idea that the optimal move might not be the one that wins the local board. From my handful of games against it, I can say that the network is extremely effective at trapping its opponent in positions where it seems that almost any move will send the bot to a won square and thus allow it to play anywhere. 
 

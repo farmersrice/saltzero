@@ -163,3 +163,5 @@ Rank Name   Elo    +    - games score oppo. draws
 (Mistyped the p6 vs p7 duel by 10 games, but it doesn't really matter)
 
 Renamed 13th model to 0th again, lowered learning rate to 0.0001.
+
+None of next 16 models could match up. Lowered learning rate to 0.00003.

@@ -16,8 +16,7 @@ class SaltZeroAgent(Agent):
 
 		#temp 1 for first 2 moves to give variation
 
-		if self.move_counter <= 2:
-			print("moved " + str(v) + " with probabilities " + str(pi[v]))
+		print("moved " + str(v) + " with probability " + str(pi[v]))
 
 		#print("probabilities are " + str(pi))
 		
