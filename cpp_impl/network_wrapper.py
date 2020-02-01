@@ -5,6 +5,11 @@ import gc
 import struct
 from mem_top import mem_top
 
+import os,sys,inspect,psutil # if it crashes for no reason, might need to pip install psutil
+
+#os.environ['CUDA_VISIBLE_DEVICES'] = '-1' # no gpu
+
+
 conf = tf.compat.v1.ConfigProto()
 conf.gpu_options.per_process_gpu_memory_fraction=0.6
 session = tf.compat.v1.Session(config=conf)
@@ -12,7 +17,6 @@ session = tf.compat.v1.Session(config=conf)
 # Unfortunately tensorflow doesn't allow us to release the used gpu memory in an easy fashion, so we have to create a separate executable
 
 
-import os,sys,inspect,psutil # if it crashes for no reason, might need to pip install psutil
 currentdir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
 parentdir = os.path.dirname(currentdir)
 sys.path.insert(0,parentdir)
@@ -20,7 +24,6 @@ sys.path.insert(0,parentdir)
 from NeuralNet import NeuralNet
 from UtttBoard import UtttBoard
 
-#os.environ['CUDA_VISIBLE_DEVICES'] = '-1' # no gpu
 
 # do it this way since we only have one python interpreter at a time
 model0 = NeuralNet()
@@ -41,7 +44,9 @@ def load_model(network_id, index):
 	else:
 		model1.load('../models', 'best_' + str(network_id) + '.h5')
 
-	print("called load model " + str(network_id))
+	#sys.stderr.write("called load model " + str(network_id) + "\n")
+	#sys.stderr.flush()
+	print("called load model " + str(network_id)) #apparently this goes to stderr by default in C++
 
 
 def predict(vector_string, index):

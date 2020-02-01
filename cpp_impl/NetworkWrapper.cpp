@@ -90,13 +90,13 @@ int NetworkWrapper::getLatestNetwork() {
 
 void NetworkWrapper::loadBestNetwork(int index) {
 	int bestNetwork = getBestNetwork();
-	cout << "loading best net " << bestNetwork << endl;
+	cerr << "loading best net " << bestNetwork << endl;
 	loadNetwork(bestNetwork, index);
 }
 
 void NetworkWrapper::loadLatestNetwork(int index) {
 	int latestNetwork = getLatestNetwork();
-	cout << "loading latest net " << latestNetwork << endl;
+	cerr << "loading latest net " << latestNetwork << endl;
 	loadNetwork(latestNetwork, index);
 }
 

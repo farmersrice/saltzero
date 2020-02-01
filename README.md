@@ -5,7 +5,7 @@ Machine learning bot for ultimate tic-tac-toe based on DeepMind's AlphaGo Zero /
 
 Ultimate tic-tac-toe is a game involving a 3 by 3 grid, each cell of which is itself a regular tic-tac-toe game, for a total board size of 9 by 9. Read the [Wikipedia page](https://en.wikipedia.org/wiki/Ultimate_tic-tac-toe) for a concise summary of the rules of the game.
 
-# I want to play right now
+## I want to play right now
 
 Download from the [releases section](https://github.com/farmersrice/saltzero/releases) in order to get the weight file.
 
@@ -23,7 +23,7 @@ Run `HumanVsRobotTest.py` in order to play against the neural network. In this s
 		[60., 61., 62., 69., 70., 71., 78., 79., 80.]
 
 
-# Description
+## Description
 
 For the general idea of the mechanism behind the bot, read the original paper, [Mastering the Game of Go without Human Knowledge](https://discovery.ucl.ac.uk/id/eprint/10045895/1/agz_unformatted_nature.pdf). Please note that some additional ideas are also taken from the AlphaZero paper, [Mastering Chess and Shogi by Self-Play with a General Reinforcement Learning Algorithm](https://arxiv.org/pdf/1712.01815.pdf). 
 
@@ -35,13 +35,13 @@ Here's a strength graph (note that network number 0 is our reference network, wh
 
 ![Strength graph](https://i.imgur.com/d0tFurd.png "Strength graph")
 
-# Features
+## Features
 
 - Concise C++ implementation for a speed advantage over Python
 
 - Additional Python implementation for readability
 
-	- C++ implementation is to be considered the most up-to-date; Python implementation may be a few updates behind.
+	- **C++ implementation is to be considered the most up-to-date**; Python implementation may be a few updates behind.
 
 - Machine learning is all conducted in Python and interfaces to C++ through the Python C API
 
@@ -59,24 +59,25 @@ Here's a strength graph (note that network number 0 is our reference network, wh
 
 - Easy to adapt to new games 
 
-# Selfplay/training
+## Other usage notes
 
-Compile `compare_networks.cpp`, `generate_games.cpp`, and `whole_pipeline.cpp` and run `whole_pipeline.cpp`.
+Compile `compare_networks.cpp`, `generate_games.cpp`, and `whole_pipeline.cpp` and run `whole_pipeline.cpp` to perform selfplay/training/evaluation.
 
 Note that you will need to produce executables with the proper names (same as the `.cpp` file names) for the program to work properly. This is because we use `system` calls in C++ to executables in order to dispose of GPU memory properly (Keras/TensorFlow don't allow us to do this in a nice manner, see comments in `whole_pipeline.cpp` for more details).
 
+`arbiter.cpp` and `bot.cpp` help compare SaltZero to other ultimate tic-tac-toe bots. Please see the readme in `cpp_impl` for more details.
 
-## Compatibility notes
+### Compatibility notes
 
 If you use an operating system other than Windows, you will have to change a few strings in `whole_pipeline.cpp` to make the appropriate `system` calls. If you use a system that does not use little-endian or is not 64 bit, you may have to play around with `NetworkWrapper.cpp` and `network_wrapper.py` (but it also might work out of the box; this is untested).
 
 You will need to use GCC in order to compile, since `__gnu_pbds` is used for its faster hash table. You can drop in `unordered_map` or `map` for compatibility with other compilers if you like.
 
-# Differences
+## Differences
 
 This section lists some differences between this implementation and the original paper, as well as other implementations online. For anything not mentioned here, you can generally assume that the implementation follows the original paper.
 
-- Evaluator uses > 52.5% gating at 400 games; in other words, a new net must win at least 210 out of 400 games against an old net to pass
+- Evaluator uses >= 52.5% gating at 400 games; in other words, a new net must win at least 210 out of 400 games against an old net to pass
 
 - Uses Dirichlet noise as in the original paper, but this time with alpha = 0.3 to compensate for fewer possible moves (this is seen to be optimal based on the AlphaZero paper)
 
@@ -88,7 +89,7 @@ This section lists some differences between this implementation and the original
 
 - Value head weighted at 0.1 instead of 1 to compensate for training on all positions
 
-# Other notes
+## Other notes
 
 The latest network is superhuman strength. If you can beat it without computer assistance, please let me know.
 

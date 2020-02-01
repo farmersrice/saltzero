@@ -165,3 +165,12 @@ Rank Name   Elo    +    - games score oppo. draws
 Renamed 13th model to 0th again, lowered learning rate to 0.0001.
 
 None of next 16 models could match up. Lowered learning rate to 0.00003.
+
+Still couldn't stack up over the next 13 models. New architecture time!
+
+lowered 16th learning rate to 0.003 and continued
+
+lowered 22nd learning rate to 0.001 and continued
+
+50th model still couldn't beat 0th, lowered learning rate of 29th model to 0.0003 (it had higher winrate)
+

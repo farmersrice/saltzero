@@ -277,8 +277,10 @@ class TrainingManager():
 		self.net = NeuralNet()
 
 		if not os.path.exists('models') or not os.path.isfile("models/best_0.h5"):
-			os.makedirs('models')
+			if not os.path.exists('models'):
+				os.makedirs('models')
 
+			self.net.net.new_network()
 			self.net.save('models', "best_0.h5")
 			self.model_string = "best_0.h5"
 			return
