@@ -22,7 +22,7 @@ temp_manager = TrainingManager()
 
 temp_manager.train_and_eval_new_network()
 
-# This is to compare with stupid MC
+# This is to compare with naive MC
 
 result = DuelManager().play_games(SaltZeroAgent(temp_manager.net, use_temp = False), NaiveMCAgent(), 10, debug = True, use_gating = False, gating_threshold = 0.0)
 

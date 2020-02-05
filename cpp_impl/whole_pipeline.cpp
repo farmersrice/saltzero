@@ -46,7 +46,7 @@ int main() {
 		system("generate_games.exe");
 
 		_chdir("..");
-		system("python main.py");
+		system("python main_train_cpp.py");
 
 		_chdir("cpp_impl");
 

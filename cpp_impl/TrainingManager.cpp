@@ -145,6 +145,8 @@ pair<vector<tuple<vector<float>, vector<float>, int>>, pair<pair<double, double>
 		set<vector<float>> duplicateChecker; 
 		int duplicates = 0;
 		
+		//int beforeUnfinished = unfinishedGames;
+
 		for (int i = 0; i < numGames; i++) {
 			UtttBoard board = boards[i];
 
@@ -201,6 +203,9 @@ pair<vector<tuple<vector<float>, vector<float>, int>>, pair<pair<double, double>
 
 		cout << "finished move " << moveCounter << " in time " << (clock() - start) / (1.0 * CLOCKS_PER_SEC) << endl;
 
+		//int gamesFinished = beforeUnfinished - unfinishedGames;
+
+		//if (gamesFinished != 0) cout << "Finished: " << gamesFinished << endl;
 		if (duplicates != 0) cout << "Duplicates: " << duplicates/8 << endl;
 		moveCounter++;
 	}
@@ -238,7 +243,6 @@ void TrainingManager::saveData(vector<tuple<vector<float>, vector<float>, int>> 
 
 	CreateDirectory("../games", NULL);
 
-	//In future, delete excess files
 	string stringPrefix = "../games/" + to_string(numGames) + "_";
 	string fileString = stringPrefix + to_string(fileCounter) + ".cpptactoe";
 

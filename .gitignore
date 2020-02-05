@@ -123,3 +123,8 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+
+# games shouldn't be sent to version control
+games/
+archive/
