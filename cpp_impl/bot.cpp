@@ -9,12 +9,17 @@ using namespace std;
 
 //g++ -O2 -std=c++14 bot.cpp UtttBoard.cpp NetworkWrapper.cpp TrainingManager.cpp MCTS.cpp -L"C:\Users\farmersrice\AppData\Local\Programs\Python\Python37\libs" -lpython37 -I"C:\Users\farmersrice\AppData\Local\Programs\Python\Python37\include" -o bot -I"C:\Users\farmersrice\Documents\boost_1_72_0" -lws2_32
 
+const int TURN_TIME_MS = 400;
+
+
 int getBestMove(MCTS &mctsItem, UtttBoard &b, NetworkWrapper &net) {
 
 	//Make our move
-	auto start = clock();
+	auto start = chrono::high_resolution_clock::now();
 
-	for (int asdf = 0; asdf < 400; asdf++) {
+	int sims = 0;
+
+	while (chrono::duration_cast<chrono::milliseconds>(chrono::high_resolution_clock::now() - start).count() < TURN_TIME_MS) {
 
 		bool noInput = false;
 
@@ -75,8 +80,11 @@ int getBestMove(MCTS &mctsItem, UtttBoard &b, NetworkWrapper &net) {
 		} else {
 			mctsItem.afterVisit(b, result.first, result.second);
 		}
+
+		sims++;
 	}
 
+	//cout << "Sims made: " << sims << endl;
 
 	pair<vector<float>, int> piAndMove = mctsItem.getProbabilitiesAndBestMove(b, 0);
 
@@ -97,6 +105,11 @@ int main() {
 	UtttBoard b;
 	NetworkWrapper net;
 	net.loadBestNetwork(0);
+
+	// Run a prediction first
+	vector<vector<float>> batchedQueries;
+	batchedQueries.push_back(b.toNetInputVector());
+	net.predict(batchedQueries, 0);
 
 	while (!b.getGameEnded()) {
 

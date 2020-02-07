@@ -23,7 +23,7 @@ int main() {
 
 	//TrainingManager t;
 
-	for (int i = 0; i < 4; i++) {
+	for (int i = 0; i < IINF; i++) {
 
 		system("process_archive.exe");
 

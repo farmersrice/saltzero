@@ -133,7 +133,7 @@ int main() {
 
 			int previousMoveRow, previousMoveCol;
 			secondOut >> previousMoveRow >> previousMoveCol;
-			
+
 			cout << previousMoveRow << ' ' << previousMoveCol << endl;
 
 			int previousMove = pairToSingle(previousMoveRow, previousMoveCol);
@@ -178,6 +178,8 @@ int main() {
 
 		firstChild.terminate();
 		secondChild.terminate();
+
+		cout << "Current counts are " << firstWins << ' ' << draws << ' ' << secondWins << " (firstWins/draws/secondWins), points are " << firstScore << ' ' << secondScore << endl;
 	}
 
 	cout << "Result of " << firstPath << " vs " << secondPath << endl;

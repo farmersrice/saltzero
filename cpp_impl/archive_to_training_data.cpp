@@ -44,7 +44,7 @@ int main() {
 
 		cout << "Processing file " << i << endl;
 
-		auto start = chrono::steady_clock::now();
+		auto start = chrono::high_resolution_clock::now();
 
 		vector<string> allLines;
 
@@ -65,7 +65,7 @@ int main() {
 		}
 
 		dataStream.close();
-		auto end = chrono::steady_clock::now();
+		auto end = chrono::high_resolution_clock::now();
 
 		cout << "Time taken: " << chrono::duration_cast<chrono::milliseconds>(end - start).count() << " ms " << endl;
 	}
