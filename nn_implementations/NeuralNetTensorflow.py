@@ -12,7 +12,7 @@ import numpy as np
 import os
 
 params = dotdict.dotdict({
-	'learning_rate': 0.01,
+	'learning_rate': 0.03,
 	'epochs': 1,
 	'c': 0.0001, # from original 
 	'momentum': 0.9 # from original
@@ -48,7 +48,10 @@ class NeuralNetTensorflow():
 		visible = keras.layers.Input(shape=(189))
 		x = Dense(1024, activation = 'relu', kernel_regularizer = regularizers.l2(params.c))(visible)
 
-		# 7 resnet blocks
+		# 10 resnet blocks
+		x = resnet_block(x)
+		x = resnet_block(x)
+		x = resnet_block(x)
 		x = resnet_block(x)
 		x = resnet_block(x)
 		x = resnet_block(x)
@@ -70,7 +73,7 @@ class NeuralNetTensorflow():
 
 		self.model.compile(loss = ['categorical_crossentropy', 'mean_squared_error'],
 			optimizer = opt, 
-			metrics = ['categorical_accuracy', 'mse'], loss_weights = [1, 0.1])
+			metrics = ['categorical_accuracy', 'mse'], loss_weights = [1, 1]) 
 
 		print(self.model.summary())
 
@@ -103,7 +106,7 @@ class NeuralNetTensorflow():
 
 		print(self.model.summary())
 		'''
-	
+
 	def predict(self, board):
 		#	print(np.asarray(board.to_nn_input_vector()).reshape(-1, 189))
 		#start = time.time()

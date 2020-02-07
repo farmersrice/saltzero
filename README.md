@@ -3,7 +3,7 @@ SaltZero
 
 Machine learning bot for ultimate tic-tac-toe based on DeepMind's AlphaGo Zero / AlphaZero papers. No human knowledge provided.
 
-Ultimate tic-tac-toe is a game involving a 3 by 3 grid, each cell of which is itself a regular tic-tac-toe game, for a total board size of 9 by 9. Read the [Wikipedia page](https://en.wikipedia.org/wiki/Ultimate_tic-tac-toe) for a concise summary of the rules of the game.
+Ultimate tic-tac-toe is a game involving a 3 by 3 grid, each cell of which is itself a regular tic-tac-toe game, for a total board size of 9 by 9. Read the [Wikipedia page](https://en.wikipedia.org/wiki/Ultimate_tic-tac-toe) for a concise summary of the rules of the game. Please note that some posts on the internet claim that ultimate tic-tac-toe is solved; however, this only applies to a weaker variant which does not forbid playing in won local boards. Real ultimate tic-tac-toe is unsolved.
 
 ## I want to play right now
 
@@ -34,6 +34,16 @@ For a speed reference: more than 2500 games an hour can be played on an i7-8550U
 Here's a strength graph (note that network number 0 is our reference network, which was trained before switching to resnet, so there is a sudden drop and ascension; network 1 is the first residual network).
 
 ![Strength graph](https://i.imgur.com/d0tFurd.png "Strength graph")
+
+## Strength
+
+Stronger than the second highest ranked bot on codingame (see the leaderboard [here](https://www.codingame.com/multiplayer/bot-programming/tic-tac-toe/leaderboard)). 
+
+Unfortunately, codingame does not allow the use of neural networks, much less the interfacing between C++ and Python used in SaltZero, so SaltZero cannot compete on their site. The author of the second best bot, Yibo Huang (NinjaDoggy), generously provided his code for comparison purposes.
+
+After 200 games played with a fixed 400ms per move, SaltZero v0.0.3 beat NinjaDoggy's bot with a score of 113 to 87; detailed results: + 65 = 96 - 39. 
+
+If you would like to compare the strength of your bot against SaltZero, please see the readme in `cpp_impl` for details on how to do so. If you have done any testing on your own, it would be greatly appreciated if you would send the results to me (`ansonhu at mit.edu`).
 
 ## Features
 
@@ -96,3 +106,7 @@ The latest network is superhuman strength. If you can beat it without computer a
 The network understands high-level concepts, such as the idea that the optimal move might not be the one that wins the local board. From my handful of games against it, I can say that the network is extremely effective at trapping its opponent in positions where it seems that almost any move will send the bot to a won square and thus allow it to play anywhere. 
 
 There are a variety of ad-hoc changes I've made to the learning rate and the networks; there's a small text-only readme in the models folder detailing these changes.
+
+### Thanks
+
+Huge thanks to Yibo Huang (NinjaDoggy) for providing the source code of his bot for strength comparisons.

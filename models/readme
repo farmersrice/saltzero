@@ -174,3 +174,7 @@ lowered 22nd learning rate to 0.001 and continued
 
 50th model still couldn't beat 0th, lowered learning rate of 29th model to 0.0003 (it had higher winrate)
 
+42nd model barely beat the 0th after lowering, but significantly slower
+
+Tune back architecture to 10b 1024 neurons/layer, changed value head wt to 1, train on window of 416k games (positions selected randomly), +73 elo, renamed 27th model to best_0 again.
+Slightly slower but the elo gain is worth it

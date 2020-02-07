@@ -16,6 +16,7 @@ tf.compat.v1.disable_eager_execution()
 
 
 learning_rate = float(sys.argv[1])
+model_num = int(sys.argv[2])
 
 temp_manager = TrainingManager()
 
@@ -30,5 +31,5 @@ K.set_value(model.optimizer.lr, learning_rate)
 
 print("Done")
 
-
-model.save("models/best_0.h5")
+print("Overwriting " + "models/best_" + str(model_num) + ".h5")
+model.save("models/best_" + str(model_num) + ".h5")
