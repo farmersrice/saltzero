@@ -21,6 +21,7 @@ typedef pair<int, pair<int, pair<int, int> > > pair4;
 /*
 g++ -O2 -std=gnu++14 compare_networks.cpp UtttBoard.cpp NetworkWrapper.cpp TrainingManager.cpp MCTS.cpp -L"C:\Users\farmersrice\AppData\Local\Programs\Python\Python37\libs" -lpython37 -o compare_networks -I"C:\Users\farmersrice\AppData\Local\Programs\Python\Python37\include"
 g++ -O2 -std=gnu++14 generate_games.cpp UtttBoard.cpp NetworkWrapper.cpp TrainingManager.cpp MCTS.cpp -L"C:\Users\farmersrice\AppData\Local\Programs\Python\Python37\libs" -lpython37 -o generate_games -I"C:\Users\farmersrice\AppData\Local\Programs\Python\Python37\include
+g++ -O2 -std=gnu++11 archive_to_training_data.cpp -o process_archive
 g++ -O2 -std=gnu++14 whole_pipeline.cpp -o whole
 */
 
@@ -44,6 +45,8 @@ int main() {
 	while (true) {
 
 		system("generate_games.exe");
+
+		system("process_archive.exe");
 
 		_chdir("..");
 		system("python main_train_cpp.py");

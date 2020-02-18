@@ -95,10 +95,6 @@ This section lists some differences between this implementation and the original
 
     - This is because the game rules clearly delineate the differences between small games and the big game. If a convolution overlaps multiple small games, its data will not be very useful, because cells next to each other are not inherently linked unless they are in the same small board (unlike in go where stones in adjacent cells become unified groups or snuff out liberties). Therefore only densely connected layers are used.
 
-- Train on all positions instead of using a training window due to significantly weaker hardware than in the original paper
-
-- Value head weighted at 0.1 instead of 1 to compensate for training on all positions
-
 ## Other notes
 
 The latest network is superhuman strength. If you can beat it without computer assistance, please let me know.

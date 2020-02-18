@@ -17,6 +17,9 @@ bool fileExists(const char* name) {
 const long long RANDOM = std::chrono::high_resolution_clock::now().time_since_epoch().count();
 mt19937 rng(RANDOM);
 
+const int PRUNE = 100; 
+const int NEW_DATA_PER_RUN = 4;
+
 int main() {
 	ios_base::sync_with_stdio(false); 
 	cin.tie(NULL);
@@ -71,5 +74,18 @@ int main() {
 	}
 
 	games.close();
+
+	if (fileCounter >= PRUNE) {
+		//Rename all files to x + 4, deleting the last 4
+
+		for (int i = PRUNE - NEW_DATA_PER_RUN; i < fileCounter; i++) {
+			fileString = stringPrefix + to_string(i) + ".cpptactoe";
+			remove(fileString.c_str());
+		}
+		for (int i = PRUNE - NEW_DATA_PER_RUN - 1; i >= 0; i--) {
+			fileString = stringPrefix + to_string(i) + ".cpptactoe";
+			rename(fileString.c_str(), (stringPrefix + to_string(i + NEW_DATA_PER_RUN) + ".cpptactoe").c_str());
+		}
+	}
 }
 

@@ -241,9 +241,9 @@ pair<vector<tuple<vector<float>, vector<float>, int>>, pair<pair<double, double>
 void TrainingManager::saveData(vector<tuple<vector<float>, vector<float>, int>> data, int numGames) {
 	int fileCounter = 0;
 
-	CreateDirectory("../games", NULL);
+	CreateDirectory("../archive", NULL);
 
-	string stringPrefix = "../games/" + to_string(numGames) + "_";
+	string stringPrefix = "../archive/" + to_string(numGames) + "_";
 	string fileString = stringPrefix + to_string(fileCounter) + ".cpptactoe";
 
 	while (fileExists(fileString.c_str())) {

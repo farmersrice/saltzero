@@ -39,11 +39,6 @@ int main() {
 		// This also means that dramatically scaling up the number of threads doesn't increase speed, since python is the bottleneck yet again.
 		// However, the multiprocessing library can't be effectively used per-thread, since we don't really have a "unified thread" to call join()  on.
 
-		// With the old network architecture we were hitting 16.5 seconds per move per 1k games on 8 threads. New one is 30 seconds per move. Both cpu only.
-		// New one takes a lot more cpu during prediction.
-
-		// With gpu, 14.75 seconds for new network, similar for old.
-
 
 		items.pb(async([&t]{ return t.playGames(PLAY_BATCH_SIZE, true, 0); }));
 	}
