@@ -1,18 +1,17 @@
 #include <bits/stdc++.h>
 #include <direct.h>
-#include "MCTS.h"
+#include "MCTSNT.h"
 #include "UtttBoard.h"
 #include "NetworkWrapper.h"
-#include "TrainingManager.h"
 
 using namespace std;
 
-//g++ -O2 -std=c++14 bot.cpp UtttBoard.cpp NetworkWrapper.cpp TrainingManager.cpp MCTS.cpp -L"C:\Users\farmersrice\AppData\Local\Programs\Python\Python37\libs" -lpython37 -I"C:\Users\farmersrice\AppData\Local\Programs\Python\Python37\include" -o bot -I"C:\Users\farmersrice\Documents\boost_1_72_0" -lws2_32
+//g++ -O2 -std=c++14 botNT.cpp UtttBoard.cpp NetworkWrapper.cpp MCTSNT.cpp -L"C:\Users\farmersrice\AppData\Local\Programs\Python\Python37\libs" -lpython37 -I"C:\Users\farmersrice\AppData\Local\Programs\Python\Python37\include" -o botNT -I"C:\Users\farmersrice\Documents\boost_1_72_0" -lws2_32
 
 const int TURN_TIME_MS = 800;
 
 
-int getBestMove(MCTS &mctsItem, UtttBoard &b, NetworkWrapper &net) {
+int getBestMove(MCTSNT &mctsItem, UtttBoard &b, NetworkWrapper &net) {
 
 	//Make our move
 	auto start = chrono::high_resolution_clock::now();
@@ -88,7 +87,6 @@ int getBestMove(MCTS &mctsItem, UtttBoard &b, NetworkWrapper &net) {
 
 	pair<vector<float>, int> piAndMove = mctsItem.getProbabilitiesAndBestMove(b, 0);
 
-	mctsItem.pruneRecursive(b, piAndMove.second);
 
 	//cout << "Moved " << piAndMove.second << endl;
 	//cout << "Time for move: " << (clock() - start) / (1.0 * CLOCKS_PER_SEC) << endl;
@@ -101,8 +99,7 @@ int main() {
 	ios_base::sync_with_stdio(false); 
 	cin.tie(NULL);
 
-	MCTS mctsItem; //UNCOMMENT LATER, THIS IS JUST FOR TRANSPOSITION TESTING
-
+	//MCTSNT mctsItem;
 	UtttBoard b;
 	NetworkWrapper net;
 	net.loadBestNetwork(0);
@@ -114,6 +111,7 @@ int main() {
 
 	while (!b.getGameEnded()) {
 
+		MCTSNT mctsItem;
 
 		//Get inputs
 
@@ -135,7 +133,6 @@ int main() {
 			int opponentMove = big + small;
 
 
-			mctsItem.pruneRecursive(b, opponentMove);
 
 			b.processMove(opponentMove);
 		}

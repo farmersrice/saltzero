@@ -25,7 +25,7 @@ int main() {
 
 	for (int i = 0; i < IINF; i++) {
 
-		system("process_archive.exe");
+		system("process_archive_no_prune.exe");
 
 		_chdir("..");
 		system("python main_train_cpp.py");

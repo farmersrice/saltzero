@@ -128,3 +128,5 @@ dmypy.json
 # games shouldn't be sent to version control
 games/
 archive/
+
+models/

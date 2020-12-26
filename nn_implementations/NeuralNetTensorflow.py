@@ -12,7 +12,7 @@ import numpy as np
 import os
 
 params = dotdict.dotdict({
-	'learning_rate': 0.03,
+	'learning_rate': 0.1,
 	'epochs': 1,
 	'c': 0.0001, # from original 
 	'momentum': 0.9 # from original
@@ -48,7 +48,9 @@ class NeuralNetTensorflow():
 		visible = keras.layers.Input(shape=(189))
 		x = Dense(1024, activation = 'relu', kernel_regularizer = regularizers.l2(params.c))(visible)
 
-		# 10 resnet blocks
+		# 12 resnet blocks
+		x = resnet_block(x)
+		x = resnet_block(x)
 		x = resnet_block(x)
 		x = resnet_block(x)
 		x = resnet_block(x)
