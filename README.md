@@ -22,6 +22,7 @@ Run `HumanVsRobotTest.py` in order to play against the neural network. In this s
 		[57., 58., 59., 66., 67., 68., 75., 76., 77.],
 		[60., 61., 62., 69., 70., 71., 78., 79., 80.]
 
+(Update Jan 2 2026: It has been a while since this was released and the project's dependency management was not very good at the time. If you are having trouble getting it to run, try python 3.11.9 with tensorflow==2.12.0. See https://github.com/farmersrice/saltzero/issues/3#issuecomment-3704534485)
 
 ## Description
 
